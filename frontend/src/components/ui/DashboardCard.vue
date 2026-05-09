@@ -3,12 +3,13 @@
    * Card de KPI para o Dashboard.
    *
    * Exibe icone grande em circulo com sombra a esquerda,
-   * e rotulo + valor numerico a direita.
+   * rotulo, valor numerico e variacao percentual a direita.
    * Usa slot para o icone (componente lucide-vue-next).
    */
   defineProps<{
     label: string;
     value: string | number;
+    change?: number | null;
   }>();
 </script>
 
@@ -21,7 +22,16 @@
     </div>
     <div>
       <span class="text-body text-secondary block">{{ label }}</span>
-      <p class="text-heading font-bold">{{ value }}</p>
+      <div class="flex items-baseline gap-2">
+        <p class="text-heading font-bold">{{ value }}</p>
+        <span
+          v-if="change !== undefined && change !== null"
+          class="text-small font-medium"
+          :class="change >= 0 ? 'text-primary-text' : 'text-error'"
+        >
+          {{ change >= 0 ? '+' : '' }}{{ change }}%
+        </span>
+      </div>
     </div>
   </div>
 </template>
