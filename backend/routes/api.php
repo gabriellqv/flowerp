@@ -1,30 +1,49 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Customers\CustomerController;
+use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Sales\SaleController;
+use App\Http\Controllers\Stock\CategoryController;
+use App\Http\Controllers\Stock\ProductController;
 use Illuminate\Support\Facades\Route;
 
-// Rotas Publicas (Sem token)
+// Publicas (sem token)
 Route::post('/auth/login', [AuthController::class, 'login']);
 
-// Rotas Protegidas (Exigem token Sanctum)
+// Protegidas (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/me', [AuthController::class, 'me']);
 
-    // --- Rotas de Teste do RBAC ---
+    // Dashboard
+    Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
 
-    // Qualquer usuario logado acessa
-    Route::get('/test/anyone', function () {
-        return response()->json(['message' => 'Qualquer role acessa aqui.']);
-    });
+    // Produtos
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/low-stock', [ProductController::class, 'lowStock']);
+    Route::get('/products/{product}', [ProductController::class, 'show']);
+    Route::post('/products', [ProductController::class, 'store'])
+        ->middleware('role:admin,manager');
+    Route::put('/products/{product}', [ProductController::class, 'update'])
+        ->middleware('role:admin,manager');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])
+        ->middleware('role:admin');
 
-    // Apenas Admin e Gerente acessam
-    Route::get('/test/management', function () {
-        return response()->json(['message' => 'So admin e manager.']);
-    })->middleware('role:admin,manager');
+    // Categorias
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::post('/categories', [CategoryController::class, 'store'])
+        ->middleware('role:admin,manager');
 
-    // Apenas Admin acessa
-    Route::get('/test/admin-only', function () {
-        return response()->json(['message' => 'So admin.']);
-    })->middleware('role:admin');
+    // Clientes
+    Route::get('/customers', [CustomerController::class, 'index']);
+    Route::post('/customers', [CustomerController::class, 'store'])
+        ->middleware('role:admin,manager');
+    Route::get('/customers/{customer}', [CustomerController::class, 'show']);
+
+    // Vendas
+    Route::get('/sales', [SaleController::class, 'index']);
+    Route::post('/sales', [SaleController::class, 'store'])
+        ->middleware('role:admin,manager,seller');
+    Route::get('/sales/{sale}', [SaleController::class, 'show']);
 });
