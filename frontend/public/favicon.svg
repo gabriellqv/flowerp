@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="10" y1="20" x2="54" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#D1FAE5" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#bg)"/>
+  <!-- Flow wave paths -->
+  <path d="M12 28c6-12 14-12 20 0s14 12 20 0" stroke="url(#wave)" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M12 40c6-12 14-12 20 0s14 12 20 0" stroke="url(#wave)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.5"/>
+</svg>

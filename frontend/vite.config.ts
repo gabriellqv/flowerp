@@ -1,0 +1,26 @@
+/**
+ * Configuração do Vite para o frontend FlowERP.
+ *
+ * @description Define plugins (Vue + Tailwind CSS), alias de caminhos (`@/`)
+ * e proxy reverso para redirecionar chamadas `/api` ao backend Laravel
+ * durante o desenvolvimento, evitando problemas de CORS.
+ *
+ * @see {@link https://vitejs.dev/config/}
+ */
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
+import { fileURLToPath } from 'node:url';
+
+export default defineConfig({
+  plugins: [vue(), tailwindcss()],
+  resolve: {
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': 'http://localhost:8000',
+    },
+  },
+});

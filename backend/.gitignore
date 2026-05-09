@@ -1,0 +1,50 @@
+# Dependencias
+/vendor
+
+# Ambiente local
+.env
+.env.backup
+.env.production
+
+# Build e storage
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/node_modules
+
+# Banco de dados local
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Bootstrap cache (gerado automaticamente)
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
+
+# Cache e testes
+/.phpunit.cache
+.phpunit.result.cache
+
+# Logs
+*.log
+
+# Editores e IDEs
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.vscode
+/.zed
+/auth.json
+_ide_helper.php
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Homestead (legado)
+Homestead.json
+Homestead.yaml
+.phpactor.json

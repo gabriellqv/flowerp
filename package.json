@@ -1,0 +1,15 @@
+{
+  "name": "flowerp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema de gestao empresarial (ERP) com Laravel e Vue.js",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/config-conventional": "^20.5.3",
+    "commitlint": "^20.5.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  }
+}
