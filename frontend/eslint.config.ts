@@ -29,6 +29,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.vue', '**/*.ts'],
+    languageOptions: {
+      globals: {
+        clearTimeout: 'readonly',
+        setTimeout: 'readonly',
+      },
+    },
+  },
+  {
     rules: {
       'vue/multi-word-component-names': 'off',
       '@typescript-eslint/no-explicit-any': 'error',
