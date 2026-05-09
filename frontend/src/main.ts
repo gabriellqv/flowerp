@@ -1,12 +1,17 @@
 /**
- * Ponto de entrada da aplicação FlowERP (frontend).
+ * Entry point da aplicacao Vue.
  *
- * @description Inicializa a instância Vue e monta o componente raiz
- * no elemento `#app` do DOM. Importa os estilos globais do Tailwind CSS.
+ * Inicializa Pinia (gerenciamento de estado) e Vue Router
+ * (navegacao SPA) antes de montar a arvore de componentes.
  */
+
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import App from './App.vue';
+import router from './router';
 import './style.css';
 
 const app = createApp(App);
+app.use(createPinia());
+app.use(router);
 app.mount('#app');
