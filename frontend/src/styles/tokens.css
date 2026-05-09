@@ -1,0 +1,100 @@
+/**
+ * Design Tokens -- FlowERP.
+ *
+ * Fonte unica de verdade para todas as variaveis de design do sistema.
+ * Valores semanticos mapeados a partir da paleta Tailwind (zinc + emerald).
+ *
+ * Tema claro como padrao. O tema escuro e aplicado via
+ * atributo [data-theme="dark"] no <html>, sobrescrevendo
+ * as custom properties definidas pelo @theme do Tailwind.
+ */
+
+:root {
+  /*
+   * Cores de superficie (backgrounds)
+   */
+  --color-surface: #fefefe;
+  --color-surface-secondary: #f9fafb;
+  --color-surface-elevated: #f3f4f6;
+
+  /*
+   * Cores de borda
+   */
+  --color-border: #e5e7eb;
+  --color-border-input: #d1d5db;
+
+  /*
+   * Cores de texto
+   */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  /*
+   * Cor primaria / acao (marca)
+   */
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-text: #059669;
+
+  /*
+   * Estados de feedback
+   */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-text: #dc2626;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-hover: #b91c1c;
+
+  --color-warning: #d97706;
+  --color-warning-bg: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  --color-info: #0284c7;
+  --color-info-bg: rgba(56, 189, 248, 0.1);
+  --color-info-border: rgba(56, 189, 248, 0.3);
+
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-border: rgba(5, 150, 105, 0.3);
+
+  /*
+   * Espacamento
+   */
+  --spacing-page: 2rem;
+  --spacing-section: 1.5rem;
+  --spacing-card: 1.25rem;
+  --spacing-input-y: 0.5rem;
+  --spacing-input-x: 1rem;
+  --spacing-button-y: 0.5rem;
+  --spacing-button-x: 1rem;
+  --spacing-button-sm-y: 0.25rem;
+  --spacing-button-sm-x: 0.75rem;
+
+  /*
+   * Border radius
+   */
+  --radius-card: 0.75rem;
+  --radius-input: 0.5rem;
+  --radius-button: 0.5rem;
+  --radius-button-sm: 0.25rem;
+
+  /*
+   * Tamanhos de fonte
+   */
+  --font-size-heading: 1.5rem;
+  --font-size-body: 0.875rem;
+  --font-size-small: 0.75rem;
+
+  /*
+   * Opacidade de estados desabilitados
+   */
+  --opacity-disabled-button: 0.5;
+  --opacity-disabled-pagination: 0.3;
+
+  /*
+   * Layout
+   */
+  --sidebar-width: 16rem;
+}
+
