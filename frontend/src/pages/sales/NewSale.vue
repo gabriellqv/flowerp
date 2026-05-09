@@ -11,6 +11,11 @@
   import type { Product, Category, CartItem } from '@/types';
   import { useRouter } from 'vue-router';
   import { Plus, Minus, Trash2 } from 'lucide-vue-next';
+  import PageContainer from '@/components/ui/PageContainer.vue';
+  import PageHeader from '@/components/ui/PageHeader.vue';
+  import AppSelect from '@/components/ui/AppSelect.vue';
+  import AppButton from '@/components/ui/AppButton.vue';
+  import AlertBox from '@/components/ui/AlertBox.vue';
 
   const router = useRouter();
 
@@ -20,6 +25,16 @@
   const cart = ref<CartItem[]>([]);
   const submitting = ref(false);
   const error = ref('');
+
+  interface SelectOption {
+    label: string;
+    value: string;
+  }
+
+  const categoryOptions = computed<SelectOption[]>(() => [
+    { label: 'Todas as categorias', value: '' },
+    ...categories.value.map((c) => ({ label: c.name, value: c.id })),
+  ]);
 
   const filteredProducts = computed(() => {
     if (!selectedCategory.value) return products.value;
@@ -85,48 +100,37 @@
 </script>
 
 <template>
-  <div class="p-8 space-y-6">
-    <h1 class="text-2xl font-bold">Nova Venda</h1>
+  <PageContainer>
+    <PageHeader title="Nova Venda" />
 
-    <div
-      v-if="error"
-      class="bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg p-3 text-sm"
-    >
-      {{ error }}
-    </div>
+    <AlertBox v-if="error">{{ error }}</AlertBox>
 
-    <select
-      v-model="selectedCategory"
-      class="px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 text-sm"
-    >
-      <option value="">Todas as categorias</option>
-      <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-    </select>
+    <AppSelect v-model="selectedCategory" :options="categoryOptions" />
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
         <button
           v-for="product in filteredProducts"
           :key="product.id"
-          class="text-left bg-zinc-900 border border-zinc-800 rounded-lg p-4 hover:border-emerald-500/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          class="text-left bg-surface-secondary border border rounded-input p-4 hover:border-primary-hover/50 transition-colors cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed"
           :disabled="product.stock_quantity === 0"
           @click="addToCart(product)"
         >
           <p class="font-medium text-sm line-clamp-1">{{ product.name }}</p>
-          <p class="text-xs text-zinc-500">{{ product.sku }}</p>
+          <p class="text-xs text-tertiary">{{ product.sku }}</p>
           <div class="flex items-center justify-between mt-2">
-            <span class="text-emerald-400 font-medium">
+            <span class="text-primary-text font-medium">
               R$ {{ Number(product.sale_price).toFixed(2) }}
             </span>
-            <span class="text-xs text-zinc-500">{{ product.stock_quantity }} un.</span>
+            <span class="text-xs text-tertiary">{{ product.stock_quantity }} un.</span>
           </div>
         </button>
       </div>
 
-      <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-5 space-y-4">
+      <div class="bg-surface-secondary border border rounded-card p-card space-y-4">
         <h2 class="font-semibold">Carrinho</h2>
 
-        <div v-if="cart.length === 0" class="text-sm text-zinc-500 text-center py-8">
+        <div v-if="cart.length === 0" class="text-sm text-tertiary text-center py-8">
           Clique nos produtos para adicionar.
         </div>
 
@@ -138,40 +142,45 @@
           >
             <div class="flex-1 min-w-0">
               <p class="truncate">{{ item.product.name }}</p>
-              <p class="text-xs text-zinc-500">
+              <p class="text-xs text-tertiary">
                 R$ {{ Number(item.product.sale_price).toFixed(2) }} x {{ item.quantity }}
               </p>
             </div>
             <div class="flex items-center gap-1">
-              <button class="p-1 hover:text-emerald-400" @click="changeQuantity(i, -1)">
+              <button
+                class="p-1 hover:text-primary-text cursor-pointer"
+                @click="changeQuantity(i, -1)"
+              >
                 <Minus class="w-4 h-4" />
               </button>
               <span class="w-8 text-center">{{ item.quantity }}</span>
-              <button class="p-1 hover:text-emerald-400" @click="changeQuantity(i, 1)">
+              <button
+                class="p-1 hover:text-primary-text cursor-pointer"
+                @click="changeQuantity(i, 1)"
+              >
                 <Plus class="w-4 h-4" />
               </button>
-              <button class="p-1 hover:text-red-400 ml-1" @click="removeFromCart(i)">
+              <button
+                class="p-1 hover:text-error-text ml-1 cursor-pointer"
+                @click="removeFromCart(i)"
+              >
                 <Trash2 class="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
 
-        <div v-if="cart.length > 0" class="border-t border-zinc-800 pt-4 space-y-3">
+        <div v-if="cart.length > 0" class="border-t border pt-4 space-y-3">
           <div class="flex justify-between font-bold">
             <span>Total</span>
             <span>R$ {{ cartTotal.toFixed(2) }}</span>
           </div>
 
-          <button
-            class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-medium transition-colors disabled:opacity-50"
-            :disabled="submitting"
-            @click="submitSale"
-          >
+          <AppButton type="button" class="w-full" :disabled="submitting" @click="submitSale">
             {{ submitting ? 'Finalizando...' : 'Finalizar Venda' }}
-          </button>
+          </AppButton>
         </div>
       </div>
     </div>
-  </div>
+  </PageContainer>
 </template>

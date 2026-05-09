@@ -1,1 +1,160 @@
+/**
+ * FlowERP -- Estilos globais, tema e tipografia.
+ *
+ * @description
+ * - Define design tokens via @theme (Tailwind v4) para utilitarios build-time.
+ * - Tokens semanticos referenciam CSS custom properties para troca de tema runtime.
+ * - Tema claro como padrao. Tema escuro via atributo [data-theme="dark"] no <html>.
+ *
+ * @see styles/tokens.css
+ */
+
+@import './styles/tokens.css';
 @import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+
+@theme {
+  /*
+   * Cores de superficie (backgrounds) -- tema claro
+   */
+  --color-surface: #fefefe;
+  --color-surface-secondary: #f9fafb;
+  --color-surface-elevated: #f3f4f6;
+
+  /*
+   * Cores de borda
+   */
+  --color-border: #e5e7eb;
+  --color-border-input: #d1d5db;
+
+  /*
+   * Cores de texto
+   */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  /*
+   * Cor primaria / acao (marca)
+   */
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-text: #059669;
+
+  /*
+   * Estados de feedback
+   */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-text: #dc2626;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-hover: #b91c1c;
+
+  --color-warning: #d97706;
+  --color-warning-bg: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  --color-info: #0284c7;
+  --color-info-bg: rgba(56, 189, 248, 0.1);
+  --color-info-border: rgba(56, 189, 248, 0.3);
+
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-border: rgba(5, 150, 105, 0.3);
+
+  /*
+   * Espacamento
+   */
+  --spacing-page: 2rem;
+  --spacing-section: 1.5rem;
+  --spacing-card: 1.25rem;
+
+  /*
+   * Border radius
+   */
+  --radius-card: 0.75rem;
+  --radius-input: 0.5rem;
+  --radius-button: 0.5rem;
+  --radius-button-sm: 0.25rem;
+
+  /*
+   * Tamanhos de fonte
+   */
+  --font-size-heading: 1.5rem;
+  --font-size-body: 0.875rem;
+  --font-size-small: 0.75rem;
+
+  /*
+   * Opacidade de estados desabilitados
+   */
+  --opacity-disabled-button: 0.5;
+  --opacity-disabled-pagination: 0.3;
+
+  /*
+   * Tipografia
+   */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/*
+ * Configuracao global de tipografia.
+ */
+@layer base {
+  body {
+    font-family: var(--font-family-sans);
+  }
+}
+
+/*
+ * Tema escuro.
+ *
+ * Sobrescreve as CSS custom properties geradas pelo @theme.
+ * Como este bloco esta em CSS sem camada (unlayered), ele
+ * vence o @theme que fica dentro da camada `theme` do Tailwind.
+ *
+ * Ativado via <html data-theme="dark">.
+ */
+[data-theme='dark'] {
+  /* Superficie */
+  --color-surface: #09090b;
+  --color-surface-secondary: #18181b;
+  --color-surface-elevated: #27272a;
+
+  /* Borda */
+  --color-border: #27272a;
+  --color-border-input: #3f3f46;
+
+  /* Texto */
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary: #71717a;
+  --color-text-disabled: #52525b;
+
+  /* Primaria */
+  --color-primary: #059669;
+  --color-primary-hover: #10b981;
+  --color-primary-text: #34d399;
+
+  /* Erro */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-text: #f87171;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-hover: #fca5a5;
+
+  /* Alerta */
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  /* Info */
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(56, 189, 248, 0.1);
+  --color-info-border: rgba(56, 189, 248, 0.3);
+
+  /* Success */
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-border: rgba(5, 150, 105, 0.3);
+}
+

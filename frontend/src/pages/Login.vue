@@ -8,6 +8,9 @@
   import { ref } from 'vue';
   import { useAuthStore } from '@/stores/auth';
   import { useRouter } from 'vue-router';
+  import AppInput from '@/components/ui/AppInput.vue';
+  import AppButton from '@/components/ui/AppButton.vue';
+  import AlertBox from '@/components/ui/AlertBox.vue';
 
   const auth = useAuthStore();
   const router = useRouter();
@@ -39,49 +42,30 @@
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-zinc-950">
+  <div class="min-h-screen flex items-center justify-center bg-surface">
     <form
-      class="w-full max-w-sm bg-zinc-900 rounded-xl border border-zinc-800 p-8 space-y-6"
+      class="w-full max-w-sm bg-surface-secondary rounded-card border border p-8 space-y-6"
       @submit.prevent="handleLogin"
     >
-      <h1 class="text-2xl font-bold text-center text-emerald-400">FlowERP</h1>
+      <h1 class="text-heading font-bold text-center text-primary-text">FlowERP</h1>
 
-      <div
-        v-if="error"
-        class="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg p-3"
-      >
-        {{ error }}
+      <AlertBox v-if="error">{{ error }}</AlertBox>
+
+      <div>
+        <label class="block text-sm text-secondary mb-1">Email</label>
+        <AppInput v-model="email" type="email" required />
       </div>
 
       <div>
-        <label class="block text-sm text-zinc-400 mb-1">Email</label>
-        <input
-          v-model="email"
-          class="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 focus:ring-2 focus:ring-emerald-500 outline-none"
-          type="email"
-          required
-        />
+        <label class="block text-sm text-secondary mb-1">Senha</label>
+        <AppInput v-model="password" type="password" required />
       </div>
 
-      <div>
-        <label class="block text-sm text-zinc-400 mb-1">Senha</label>
-        <input
-          v-model="password"
-          class="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 focus:ring-2 focus:ring-emerald-500 outline-none"
-          type="password"
-          required
-        />
-      </div>
-
-      <button
-        class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-medium transition-colors disabled:opacity-50"
-        type="submit"
-        :disabled="loading"
-      >
+      <AppButton type="submit" class="w-full" :disabled="loading">
         {{ loading ? 'Entrando...' : 'Entrar' }}
-      </button>
+      </AppButton>
 
-      <p class="text-xs text-zinc-600 text-center">admin@flowerp.com / senha123</p>
+      <p class="text-xs text-disabled text-center">admin@flowerp.com / senha123</p>
     </form>
   </div>
 </template>

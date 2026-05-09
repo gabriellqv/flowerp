@@ -10,6 +10,8 @@
   import api from '@/services/api';
   import type { PaginatedResponse } from '@/types';
   import DataTable from '@/components/ui/DataTable.vue';
+  import PageContainer from '@/components/ui/PageContainer.vue';
+  import PageHeader from '@/components/ui/PageHeader.vue';
 
   interface Customer {
     id: string;
@@ -51,8 +53,8 @@
 </script>
 
 <template>
-  <div class="p-8 space-y-6">
-    <h1 class="text-2xl font-bold">Clientes</h1>
+  <PageContainer>
+    <PageHeader title="Clientes" />
 
     <DataTable
       :columns="columns"
@@ -74,5 +76,5 @@
         {{ value || '-' }}
       </template>
     </DataTable>
-  </div>
+  </PageContainer>
 </template>

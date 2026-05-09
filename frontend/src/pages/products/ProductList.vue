@@ -9,6 +9,8 @@
   import api from '@/services/api';
   import type { Product, PaginatedResponse, Category } from '@/types';
   import DataTable from '@/components/ui/DataTable.vue';
+  import PageContainer from '@/components/ui/PageContainer.vue';
+  import PageHeader from '@/components/ui/PageHeader.vue';
 
   const products = ref<Product[]>([]);
   const total = ref(0);
@@ -51,10 +53,8 @@
 </script>
 
 <template>
-  <div class="p-8 space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold">Produtos</h1>
-    </div>
+  <PageContainer>
+    <PageHeader title="Produtos" />
 
     <DataTable
       :columns="columns"
@@ -74,10 +74,10 @@
         <span
           :class="
             row.stock_quantity <= row.min_stock
-              ? 'text-amber-400'
+              ? 'text-warning'
               : row.stock_quantity === 0
-                ? 'text-red-400'
-                : 'text-emerald-400'
+                ? 'text-error-text'
+                : 'text-primary-text'
           "
         >
           {{
@@ -90,5 +90,5 @@
         </span>
       </template>
     </DataTable>
-  </div>
+  </PageContainer>
 </template>

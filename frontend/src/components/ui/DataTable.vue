@@ -9,6 +9,8 @@
    * permitir formatacao customizada por coluna.
    */
   import { ref, computed } from 'vue';
+  import AppInput from '@/components/ui/AppInput.vue';
+  import AppButton from '@/components/ui/AppButton.vue';
 
   interface Column {
     key: string;
@@ -43,36 +45,35 @@
 
 <template>
   <div class="space-y-4">
-    <input
+    <AppInput
       v-model="searchQuery"
-      class="w-full max-w-sm px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
+      class="max-w-sm !bg-surface-secondary"
       placeholder="Buscar..."
-      type="text"
       @input="onSearch"
     />
 
-    <div class="overflow-x-auto rounded-lg border border-zinc-800">
+    <div class="overflow-x-auto rounded-input border border">
       <table class="w-full text-sm text-left">
-        <thead class="bg-zinc-800/50 text-zinc-400 uppercase text-xs">
+        <thead class="bg-surface-elevated/50 text-secondary uppercase text-xs">
           <tr>
             <th v-for="col in columns" :key="col.key" class="px-4 py-3">
               {{ col.label }}
             </th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-zinc-800">
+        <tbody class="divide-y divide">
           <tr v-if="loading">
-            <td :colspan="columns.length" class="px-4 py-8 text-center text-zinc-500">
+            <td :colspan="columns.length" class="px-4 py-8 text-center text-tertiary">
               Carregando...
             </td>
           </tr>
           <tr v-else-if="data.length === 0">
-            <td :colspan="columns.length" class="px-4 py-8 text-center text-zinc-500">
+            <td :colspan="columns.length" class="px-4 py-8 text-center text-tertiary">
               Nenhum registro encontrado.
             </td>
           </tr>
-          <tr v-for="row in data" v-else :key="row.id" class="hover:bg-zinc-800/30">
-            <td v-for="col in columns" :key="col.key" class="px-4 py-3 text-zinc-300">
+          <tr v-for="row in data" v-else :key="row.id" class="hover:bg-surface-elevated/30">
+            <td v-for="col in columns" :key="col.key" class="px-4 py-3 text-primary">
               <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
                 {{ row[col.key] }}
               </slot>
@@ -82,23 +83,25 @@
       </table>
     </div>
 
-    <div class="flex items-center justify-between text-sm text-zinc-400">
+    <div class="flex items-center justify-between text-sm text-secondary">
       <span>Pagina {{ page }} de {{ totalPages }} ({{ total }} registros)</span>
       <div class="flex gap-2">
-        <button
-          class="px-3 py-1 rounded bg-zinc-800 hover:bg-zinc-700 disabled:opacity-30"
+        <AppButton
+          size="sm"
+          variant="secondary"
           :disabled="page <= 1"
           @click="emit('update:page', page - 1)"
         >
           Anterior
-        </button>
-        <button
-          class="px-3 py-1 rounded bg-zinc-800 hover:bg-zinc-700 disabled:opacity-30"
+        </AppButton>
+        <AppButton
+          size="sm"
+          variant="secondary"
           :disabled="page >= totalPages"
           @click="emit('update:page', page + 1)"
         >
           Proximo
-        </button>
+        </AppButton>
       </div>
     </div>
   </div>

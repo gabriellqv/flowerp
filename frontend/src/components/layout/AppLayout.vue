@@ -1,66 +1,101 @@
 <script setup lang="ts">
   /**
-   * Layout principal da aplicacao com sidebar de navegacao.
+   * Layout principal da aplicacao com sidebar compacta de icones.
    *
-   * Agrupa o header lateral, navegacao contextual por perfil
-   * e o botao de logout em um shell responsivo com Tailwind.
+   * Sidebar estreita (w-16) com apenas icones SVG centralizados.
+   * O logo do FlowERP substitui o texto, e cada item de navegacao
+   * exibe tooltip via atributo title para acessibilidade.
    */
   import { useAuthStore } from '@/stores/auth';
   import { useRouter } from 'vue-router';
-  import { computed } from 'vue';
+  import { computed, type Component } from 'vue';
+  import {
+    LayoutDashboard,
+    Package,
+    ShoppingCart,
+    Users,
+    Sun,
+    Moon,
+    LogOut,
+  } from 'lucide-vue-next';
+  import { isDark, toggleTheme } from '@/composables/useTheme';
 
   const auth = useAuthStore();
   const router = useRouter();
 
-  const navItems = computed(() => {
-    const items = [
-      { label: 'Dashboard', to: '/' },
-      { label: 'Produtos', to: '/products' },
+  interface INavItem {
+    label: string;
+    to: string;
+    icon: Component;
+  }
+
+  const navItems = computed<INavItem[]>(() => {
+    const items: INavItem[] = [
+      { label: 'Dashboard', to: '/', icon: LayoutDashboard },
+      { label: 'Produtos', to: '/products', icon: Package },
     ];
 
     if (auth.canSell) {
-      items.push({ label: 'Vendas', to: '/sales' });
+      items.push({ label: 'Vendas', to: '/sales', icon: ShoppingCart });
     }
 
-    items.push({ label: 'Clientes', to: '/customers' });
+    items.push({ label: 'Clientes', to: '/customers', icon: Users });
 
     return items;
   });
+
+  function handleLogout() {
+    auth.logout();
+    router.push('/login');
+  }
 </script>
 
 <template>
-  <div class="min-h-screen bg-zinc-950 text-zinc-100 flex">
-    <aside class="w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col">
-      <h1 class="text-lg font-bold text-emerald-400 mb-6">FlowERP</h1>
+  <div class="h-screen bg-surface text-primary flex overflow-hidden">
+    <aside
+      class="w-16 bg-surface-secondary border-r border-border flex flex-col items-center py-4 shrink-0"
+    >
+      <!-- Logo (favicon) -->
+      <RouterLink to="/" class="mb-6" title="FlowERP">
+        <img src="/favicon.svg" alt="FlowERP" class="w-8 h-8" />
+      </RouterLink>
 
-      <nav class="flex-1 space-y-1">
+      <!-- Navegacao -->
+      <nav class="flex-1 flex flex-col items-center gap-1">
         <RouterLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          class="block px-3 py-2 rounded-lg text-sm hover:bg-zinc-800 transition-colors"
-          active-class="bg-zinc-800 text-white"
+          class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors"
+          active-class="bg-surface-elevated text-primary-text"
+          :title="item.label"
         >
-          {{ item.label }}
+          <component :is="item.icon" :size="20" />
         </RouterLink>
       </nav>
 
-      <div class="border-t border-zinc-800 pt-4">
-        <p class="text-xs text-zinc-500">{{ auth.user?.name }}</p>
-        <p class="text-xs text-zinc-600 mb-2">{{ auth.user?.role }}</p>
+      <!-- Acoes do rodape -->
+      <div class="flex flex-col items-center gap-2">
         <button
-          class="text-xs text-red-400 hover:text-red-300"
-          @click="
-            auth.logout();
-            router.push('/login');
-          "
+          class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors cursor-pointer"
+          :title="isDark ? 'Tema claro' : 'Tema escuro'"
+          @click="toggleTheme()"
         >
-          Sair
+          <Sun v-if="isDark" :size="20" class="text-primary-text" />
+          <Moon v-else :size="20" class="text-secondary" />
+        </button>
+
+        <button
+          class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-error-bg text-error transition-colors cursor-pointer"
+          title="Sair"
+          @click="handleLogout"
+        >
+          <LogOut :size="20" />
         </button>
       </div>
     </aside>
 
-    <main class="flex-1 overflow-auto">
+    <main class="flex-1 overflow-y-auto">
       <RouterView />
     </main>
   </div>

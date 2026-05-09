@@ -9,9 +9,40 @@
   import api from '@/services/api';
   import type { DashboardSummary } from '@/types';
   import { Package, DollarSign, AlertTriangle, ShoppingCart } from 'lucide-vue-next';
+  import PageContainer from '@/components/ui/PageContainer.vue';
+  import PageHeader from '@/components/ui/PageHeader.vue';
+  import DashboardCard from '@/components/ui/DashboardCard.vue';
 
   const summary = ref<DashboardSummary | null>(null);
   const loading = ref(true);
+
+  const cards = [
+    {
+      label: 'Produtos Ativos',
+      key: 'active_products' as const,
+      icon: Package,
+      iconClass: 'w-6 h-6 text-primary-text',
+    },
+    {
+      label: 'Receita do Mes',
+      key: 'monthly_revenue' as const,
+      icon: DollarSign,
+      iconClass: 'w-6 h-6 text-primary-text',
+      format: (v: number) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`,
+    },
+    {
+      label: 'Estoque Baixo',
+      key: 'low_stock_count' as const,
+      icon: AlertTriangle,
+      iconClass: 'w-6 h-6 text-warning',
+    },
+    {
+      label: 'Vendas do Mes',
+      key: 'monthly_sales_count' as const,
+      icon: ShoppingCart,
+      iconClass: 'w-6 h-6 text-info',
+    },
+  ];
 
   onMounted(async () => {
     const { data } = await api.get<DashboardSummary>('/dashboard/summary');
@@ -21,46 +52,22 @@
 </script>
 
 <template>
-  <div class="p-8 space-y-8">
-    <h1 class="text-2xl font-bold">Dashboard</h1>
+  <PageContainer>
+    <PageHeader title="Dashboard" />
 
-    <div v-if="loading" class="text-zinc-500">Carregando...</div>
+    <div v-if="loading" class="text-tertiary">Carregando...</div>
 
     <div v-else-if="summary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-sm text-zinc-400">Produtos Ativos</span>
-          <Package class="w-5 h-5 text-emerald-400" />
-        </div>
-        <p class="text-2xl font-bold">{{ summary.active_products }}</p>
-      </div>
-
-      <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-sm text-zinc-400">Receita do Mes</span>
-          <DollarSign class="w-5 h-5 text-emerald-400" />
-        </div>
-        <p class="text-2xl font-bold">
-          R$
-          {{ summary.monthly_revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
-        </p>
-      </div>
-
-      <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-sm text-zinc-400">Estoque Baixo</span>
-          <AlertTriangle class="w-5 h-5 text-amber-400" />
-        </div>
-        <p class="text-2xl font-bold">{{ summary.low_stock_count }}</p>
-      </div>
-
-      <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-sm text-zinc-400">Vendas do Mes</span>
-          <ShoppingCart class="w-5 h-5 text-sky-400" />
-        </div>
-        <p class="text-2xl font-bold">{{ summary.monthly_sales_count }}</p>
-      </div>
+      <DashboardCard
+        v-for="card in cards"
+        :key="card.key"
+        :label="card.label"
+        :value="card.format ? card.format(Number(summary[card.key])) : String(summary[card.key])"
+      >
+        <template #icon>
+          <component :is="card.icon" :class="card.iconClass" />
+        </template>
+      </DashboardCard>
     </div>
-  </div>
+  </PageContainer>
 </template>

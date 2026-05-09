@@ -11,6 +11,9 @@
   import DataTable from '@/components/ui/DataTable.vue';
   import { useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/auth';
+  import PageContainer from '@/components/ui/PageContainer.vue';
+  import PageHeader from '@/components/ui/PageHeader.vue';
+  import AppButton from '@/components/ui/AppButton.vue';
 
   const router = useRouter();
   const auth = useAuthStore();
@@ -42,17 +45,12 @@
 </script>
 
 <template>
-  <div class="p-8 space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold">Vendas</h1>
-      <button
-        v-if="auth.canSell"
-        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-medium transition-colors"
-        @click="router.push('/sales/new')"
-      >
-        Nova Venda
-      </button>
-    </div>
+  <PageContainer>
+    <PageHeader title="Vendas">
+      <template v-if="auth.canSell" #actions>
+        <AppButton size="sm" @click="router.push('/sales/new')">Nova Venda</AppButton>
+      </template>
+    </PageHeader>
 
     <DataTable
       :columns="columns"
@@ -72,5 +70,5 @@
         {{ new Date(row.created_at).toLocaleDateString('pt-BR') }}
       </template>
     </DataTable>
-  </div>
+  </PageContainer>
 </template>
