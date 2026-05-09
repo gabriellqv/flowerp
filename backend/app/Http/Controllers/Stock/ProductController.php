@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Http\Controllers\Stock;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
+use App\Models\Product;
+use App\Services\StockService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+/**
+ * Controller de gerenciamento de produtos.
+ *
+ * Fornece endpoints REST para CRUD de produtos,
+ * alem de listagem de estoque baixo e filtros avancados.
+ */
+class ProductController extends Controller
+{
+    /**
+     * @param  StockService  $stockService  Servico de logica de estoque
+     */
+    public function __construct(
+        private readonly StockService $stockService,
+    ) {}
+
+    /**
+     * Lista produtos com filtros, ordenacao e paginacao.
+     *
+     * @param  Request  $request  Query params: search, category_id, sort_by, order, per_page
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $products = $this->stockService->listProducts(
+            search: $request->query('search'),
+            categoryId: $request->query('category_id'),
+            sortBy: $request->query('sort_by', 'created_at'),
+            order: $request->query('order', 'desc'),
+            perPage: (int) $request->query('per_page', 20),
+        );
+
+        return response()->json($products);
+    }
+
+    /**
+     * Cria um novo produto com movimentacao inicial de estoque.
+     *
+     * @param  StoreProductRequest  $request  Dados validados do produto
+     * @return JsonResponse Produto criado (201)
+     */
+    public function store(StoreProductRequest $request): JsonResponse
+    {
+        $product = $this->stockService->createProduct($request->validated());
+
+        return response()->json($product, 201);
+    }
+
+    /**
+     * Exibe os detalhes de um produto especifico.
+     *
+     * @param  Product  $product  Produto resolvido via Route Model Binding
+     */
+    public function show(Product $product): JsonResponse
+    {
+        return response()->json($product->load('category'));
+    }
+
+    /**
+     * Atualiza dados de um produto existente.
+     *
+     * @param  UpdateProductRequest  $request  Dados validados (parcial)
+     * @param  Product  $product  Produto a ser atualizado
+     */
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse
+    {
+        $product = $this->stockService->updateProduct($product, $request->validated());
+
+        return response()->json($product);
+    }
+
+    /**
+     * Desativa logicamente um produto (soft delete).
+     *
+     * @param  Product  $product  Produto a ser desativado
+     * @return JsonResponse 204 No Content
+     */
+    public function destroy(Product $product): JsonResponse
+    {
+        $this->stockService->deactivateProduct($product);
+
+        return response()->json(null, 204);
+    }
+
+    /**
+     * Lista produtos com estoque abaixo do minimo configurado.
+     */
+    public function lowStock(): JsonResponse
+    {
+        return response()->json($this->stockService->getLowStockProducts());
+    }
+}
