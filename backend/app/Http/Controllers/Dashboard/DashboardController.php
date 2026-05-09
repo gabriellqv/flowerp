@@ -60,4 +60,24 @@ class DashboardController extends Controller
     {
         return response()->json($this->dashboardService->getRecentActivity());
     }
+
+    /**
+     * Retorna os 5 produtos mais vendidos no mes atual.
+     *
+     * @return JsonResponse Top produtos em formato JSON
+     */
+    public function topProducts(): JsonResponse
+    {
+        return response()->json($this->dashboardService->getTopProducts());
+    }
+
+    /**
+     * Retorna a receita do mes atual agrupada por categoria.
+     *
+     * @return JsonResponse Receita por categoria em formato JSON
+     */
+    public function revenueByCategory(): JsonResponse
+    {
+        return response()->json($this->dashboardService->getRevenueByCategory());
+    }
 }

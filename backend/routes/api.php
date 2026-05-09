@@ -20,6 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
     Route::get('/dashboard/revenue-chart', [DashboardController::class, 'revenueChart']);
     Route::get('/dashboard/activity-feed', [DashboardController::class, 'activityFeed']);
+    Route::get('/dashboard/top-products', [DashboardController::class, 'topProducts']);
+    Route::get('/dashboard/revenue-by-category', [DashboardController::class, 'revenueByCategory']);
 
     // Produtos
     Route::get('/products', [ProductController::class, 'index']);

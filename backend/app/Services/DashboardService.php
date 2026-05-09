@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Servico de metricas e indicadores do dashboard.
@@ -60,6 +61,13 @@ class DashboardService
             ->whereColumn('stock_quantity', '<=', 'min_stock')
             ->count();
 
+        // Valor total em estoque (baseado no preco de custo)
+        $totalStockValue = (float) Product::where('is_active', true)
+            ->sum(DB::raw('stock_quantity * cost_price'));
+
+        // Ticket medio do mes atual
+        $averageTicket = $currentSalesCount > 0 ? $currentRevenue / $currentSalesCount : 0;
+
         return [
             'active_products' => Product::where('is_active', true)->count(),
             'monthly_revenue' => $currentRevenue,
@@ -70,6 +78,8 @@ class DashboardService
             'monthly_sales_count' => $currentSalesCount,
             'previous_sales_count' => $previousSalesCount,
             'sales_change' => $this->calculateChange($currentSalesCount, $previousSalesCount),
+            'average_ticket' => $averageTicket,
+            'total_stock_value' => $totalStockValue,
         ];
     }
 
@@ -180,5 +190,47 @@ class DashboardService
         }
 
         return $results;
+    }
+
+    /**
+     * Retorna os 5 produtos mais vendidos no mes atual.
+     *
+     * @return Collection<int, mixed>
+     */
+    public function getTopProducts(): Collection
+    {
+        $thisMonthStart = Carbon::now()->startOfMonth();
+
+        return DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->where('sales.created_at', '>=', $thisMonthStart)
+            ->where('sales.status', 'COMPLETED')
+            ->select('products.name as label', DB::raw('SUM(sale_items.quantity) as value'))
+            ->groupBy('products.id', 'products.name')
+            ->orderByDesc('value')
+            ->limit(5)
+            ->get();
+    }
+
+    /**
+     * Retorna a receita do mes atual agrupada por categoria.
+     *
+     * @return Collection<int, mixed>
+     */
+    public function getRevenueByCategory(): Collection
+    {
+        $thisMonthStart = Carbon::now()->startOfMonth();
+
+        return DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->where('sales.created_at', '>=', $thisMonthStart)
+            ->where('sales.status', 'COMPLETED')
+            ->select('categories.name as label', DB::raw('SUM(sale_items.quantity * sale_items.unit_price) as value'))
+            ->groupBy('categories.id', 'categories.name')
+            ->orderByDesc('value')
+            ->get();
     }
 }
