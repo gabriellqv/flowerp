@@ -70,6 +70,8 @@ export interface DashboardSummary {
   monthly_sales_count: number;
   previous_sales_count: number;
   sales_change: number | null;
+  average_ticket: number;
+  total_stock_value: number;
 }
 
 /**
