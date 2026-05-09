@@ -108,14 +108,14 @@
         <button
           v-for="product in filteredProducts"
           :key="product.id"
-          class="text-left bg-zinc-900 border border-zinc-800 rounded-lg p-4 hover:border-indigo-500/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          class="text-left bg-zinc-900 border border-zinc-800 rounded-lg p-4 hover:border-emerald-500/50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           :disabled="product.stock_quantity === 0"
           @click="addToCart(product)"
         >
           <p class="font-medium text-sm line-clamp-1">{{ product.name }}</p>
           <p class="text-xs text-zinc-500">{{ product.sku }}</p>
           <div class="flex items-center justify-between mt-2">
-            <span class="text-indigo-400 font-medium">
+            <span class="text-emerald-400 font-medium">
               R$ {{ Number(product.sale_price).toFixed(2) }}
             </span>
             <span class="text-xs text-zinc-500">{{ product.stock_quantity }} un.</span>
@@ -143,11 +143,11 @@
               </p>
             </div>
             <div class="flex items-center gap-1">
-              <button class="p-1 hover:text-indigo-400" @click="changeQuantity(i, -1)">
+              <button class="p-1 hover:text-emerald-400" @click="changeQuantity(i, -1)">
                 <Minus class="w-4 h-4" />
               </button>
               <span class="w-8 text-center">{{ item.quantity }}</span>
-              <button class="p-1 hover:text-indigo-400" @click="changeQuantity(i, 1)">
+              <button class="p-1 hover:text-emerald-400" @click="changeQuantity(i, 1)">
                 <Plus class="w-4 h-4" />
               </button>
               <button class="p-1 hover:text-red-400 ml-1" @click="removeFromCart(i)">

@@ -44,7 +44,7 @@
       class="w-full max-w-sm bg-zinc-900 rounded-xl border border-zinc-800 p-8 space-y-6"
       @submit.prevent="handleLogin"
     >
-      <h1 class="text-2xl font-bold text-center text-indigo-400">FlowERP</h1>
+      <h1 class="text-2xl font-bold text-center text-emerald-400">FlowERP</h1>
 
       <div
         v-if="error"
@@ -57,7 +57,7 @@
         <label class="block text-sm text-zinc-400 mb-1">Email</label>
         <input
           v-model="email"
-          class="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+          class="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 focus:ring-2 focus:ring-emerald-500 outline-none"
           type="email"
           required
         />
@@ -67,14 +67,14 @@
         <label class="block text-sm text-zinc-400 mb-1">Senha</label>
         <input
           v-model="password"
-          class="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 focus:ring-2 focus:ring-indigo-500 outline-none"
+          class="w-full px-4 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-100 focus:ring-2 focus:ring-emerald-500 outline-none"
           type="password"
           required
         />
       </div>
 
       <button
-        class="w-full py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition-colors disabled:opacity-50"
+        class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg font-medium transition-colors disabled:opacity-50"
         type="submit"
         :disabled="loading"
       >

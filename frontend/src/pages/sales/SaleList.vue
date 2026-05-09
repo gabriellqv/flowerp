@@ -47,7 +47,7 @@
       <h1 class="text-2xl font-bold">Vendas</h1>
       <button
         v-if="auth.canSell"
-        class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-medium transition-colors"
+        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-sm font-medium transition-colors"
         @click="router.push('/sales/new')"
       >
         Nova Venda

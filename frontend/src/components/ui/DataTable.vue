@@ -45,7 +45,7 @@
   <div class="space-y-4">
     <input
       v-model="searchQuery"
-      class="w-full max-w-sm px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+      class="w-full max-w-sm px-4 py-2 rounded-lg bg-zinc-900 border border-zinc-700 text-zinc-100 placeholder-zinc-500 focus:ring-2 focus:ring-emerald-500 outline-none text-sm"
       placeholder="Buscar..."
       type="text"
       @input="onSearch"

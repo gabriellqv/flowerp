@@ -31,7 +31,7 @@
 <template>
   <div class="min-h-screen bg-zinc-950 text-zinc-100 flex">
     <aside class="w-64 bg-zinc-900 border-r border-zinc-800 p-4 flex flex-col">
-      <h1 class="text-lg font-bold text-indigo-400 mb-6">FlowERP</h1>
+      <h1 class="text-lg font-bold text-emerald-400 mb-6">FlowERP</h1>
 
       <nav class="flex-1 space-y-1">
         <RouterLink

@@ -30,7 +30,7 @@
       <div class="bg-zinc-900 rounded-xl border border-zinc-800 p-5">
         <div class="flex items-center justify-between mb-3">
           <span class="text-sm text-zinc-400">Produtos Ativos</span>
-          <Package class="w-5 h-5 text-indigo-400" />
+          <Package class="w-5 h-5 text-emerald-400" />
         </div>
         <p class="text-2xl font-bold">{{ summary.active_products }}</p>
       </div>
