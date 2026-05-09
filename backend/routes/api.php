@@ -18,6 +18,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Dashboard
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
+    Route::get('/dashboard/revenue-chart', [DashboardController::class, 'revenueChart']);
+    Route::get('/dashboard/activity-feed', [DashboardController::class, 'activityFeed']);
 
     // Produtos
     Route::get('/products', [ProductController::class, 'index']);

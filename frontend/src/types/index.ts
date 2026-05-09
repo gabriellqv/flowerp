@@ -63,8 +63,34 @@ export interface Sale {
 export interface DashboardSummary {
   active_products: number;
   monthly_revenue: number;
+  previous_revenue: number;
+  revenue_change: number | null;
   low_stock_count: number;
+  zero_stock_count: number;
   monthly_sales_count: number;
+  previous_sales_count: number;
+  sales_change: number | null;
+}
+
+/**
+ * Ponto de dado para gráficos de receita.
+ */
+export interface IChartDataPoint {
+  label: string;
+  value: number;
+}
+
+/**
+ * Registro de atividade do sistema para o feed do dashboard.
+ */
+export interface IActivityLogEntry {
+  id: string;
+  user_id: number;
+  user: { id: number; name: string } | null;
+  action: string;
+  entity: string;
+  details: Record<string, unknown> | null;
+  created_at: string;
 }
 
 export interface CartItem {
