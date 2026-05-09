@@ -1,13 +1,20 @@
 <?php
 
-// migration: add_role_and_is_active_to_users_table
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Adiciona colunas de controle de acesso a tabela de usuarios.
+ *
+ * Esta migracao insere as colunas para RBAC (role, is_active)
+ * e rastreamento do ultimo login (last_login_at).
+ */
 return new class extends Migration
 {
+    /**
+     * Adiciona as colunas role, is_active e last_login_at.
+     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -17,6 +24,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Remove as colunas de RBAC da tabela de usuarios.
+     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
