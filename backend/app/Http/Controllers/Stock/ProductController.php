@@ -99,4 +99,32 @@ class ProductController extends Controller
     {
         return response()->json($this->stockService->getLowStockProducts());
     }
+
+    /**
+     * Alterna o status ativo/inativo de um produto.
+     *
+     * @param  Product  $product  Produto a ser alternado
+     * @return JsonResponse Produto com novo estado
+     */
+    public function toggleActive(Product $product): JsonResponse
+    {
+        $product = $this->stockService->toggleProductActive($product);
+
+        return response()->json($product);
+    }
+
+    /**
+     * Exclui multiplos produtos em lote.
+     *
+     * @param  Request  $request  Deve conter array 'ids' com UUIDs
+     * @return JsonResponse 204 No Content
+     */
+    public function bulkDelete(Request $request): JsonResponse
+    {
+        $request->validate(['ids' => ['required', 'array', 'min:1'], 'ids.*' => ['string', 'uuid']]);
+
+        $this->stockService->bulkDeactivateProducts($request->input('ids'));
+
+        return response()->json(null, 204);
+    }
 }

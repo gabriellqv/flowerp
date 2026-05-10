@@ -26,10 +26,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Produtos
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/low-stock', [ProductController::class, 'lowStock']);
+    Route::post('/products/bulk-delete', [ProductController::class, 'bulkDelete'])
+        ->middleware('role:admin,manager');
     Route::get('/products/{product}', [ProductController::class, 'show']);
     Route::post('/products', [ProductController::class, 'store'])
         ->middleware('role:admin,manager');
     Route::put('/products/{product}', [ProductController::class, 'update'])
+        ->middleware('role:admin,manager');
+    Route::patch('/products/{product}/toggle-active', [ProductController::class, 'toggleActive'])
         ->middleware('role:admin,manager');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])
         ->middleware('role:admin');

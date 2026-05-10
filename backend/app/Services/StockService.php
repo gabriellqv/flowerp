@@ -119,4 +119,27 @@ class StockService
             ->orderBy('stock_quantity', 'asc')
             ->get();
     }
+
+    /**
+     * Alterna o status is_active de um produto.
+     *
+     * @param  Product  $product  Produto a ter o estado alternado
+     * @return Product Produto atualizado com categoria carregada
+     */
+    public function toggleProductActive(Product $product): Product
+    {
+        $product->update(['is_active' => ! $product->is_active]);
+
+        return $product->load('category');
+    }
+
+    /**
+     * Desativa multiplos produtos em lote.
+     *
+     * @param  array  $ids  Array de UUIDs dos produtos
+     */
+    public function bulkDeactivateProducts(array $ids): void
+    {
+        Product::whereIn('id', $ids)->update(['is_active' => false]);
+    }
 }
