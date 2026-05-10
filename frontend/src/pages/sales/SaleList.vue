@@ -61,11 +61,15 @@
       :loading="loading"
       @update:page="page = $event"
     >
-      <template #cell-id="{ row }">#{{ row.id.slice(0, 8) }}</template>
+      <template #cell-id="{ row }">
+        <span class="font-mono">#{{ row.id.slice(0, 8) }}</span>
+      </template>
       <template #cell-seller="{ row }">
         {{ row.seller?.name || '-' }}
       </template>
-      <template #cell-total_amount="{ row }">R$ {{ Number(row.total_amount).toFixed(2) }}</template>
+      <template #cell-total_amount="{ row }">
+        <span class="font-mono">R$ {{ Number(row.total_amount).toFixed(2) }}</span>
+      </template>
       <template #cell-created_at="{ row }">
         {{ new Date(row.created_at).toLocaleDateString('pt-BR') }}
       </template>

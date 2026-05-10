@@ -47,7 +47,7 @@
       class="w-full max-w-sm bg-surface-secondary rounded-card border border p-8 space-y-6"
       @submit.prevent="handleLogin"
     >
-      <h1 class="text-heading font-bold text-center text-primary-text">FlowERP</h1>
+      <h1 class="text-heading font-semibold text-center text-primary-text">FlowERP</h1>
 
       <AlertBox v-if="error">{{ error }}</AlertBox>
 

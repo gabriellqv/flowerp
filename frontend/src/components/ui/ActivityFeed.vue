@@ -87,7 +87,9 @@
           </p>
           <p v-if="getCustomerName(activity)" class="text-small text-tertiary truncate">
             Cliente: {{ getCustomerName(activity) }}
-            <span v-if="getTotal(activity)">&middot; R$ {{ getTotal(activity) }}</span>
+            <span v-if="getTotal(activity)" class="font-mono">
+              &middot; R$ {{ getTotal(activity) }}
+            </span>
           </p>
           <span class="text-small text-disabled">{{ timeAgo(activity.created_at) }}</span>
         </div>

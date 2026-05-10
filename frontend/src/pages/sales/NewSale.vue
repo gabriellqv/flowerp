@@ -117,12 +117,12 @@
           @click="addToCart(product)"
         >
           <p class="font-medium text-sm line-clamp-1">{{ product.name }}</p>
-          <p class="text-xs text-tertiary">{{ product.sku }}</p>
+          <p class="text-xs text-tertiary font-mono">{{ product.sku }}</p>
           <div class="flex items-center justify-between mt-2">
-            <span class="text-primary-text font-medium">
+            <span class="text-primary-text font-medium font-mono">
               R$ {{ Number(product.sale_price).toFixed(2) }}
             </span>
-            <span class="text-xs text-tertiary">{{ product.stock_quantity }} un.</span>
+            <span class="text-xs text-tertiary font-mono">{{ product.stock_quantity }} un.</span>
           </div>
         </button>
       </div>
@@ -142,7 +142,7 @@
           >
             <div class="flex-1 min-w-0">
               <p class="truncate">{{ item.product.name }}</p>
-              <p class="text-xs text-tertiary">
+              <p class="text-xs text-tertiary font-mono">
                 R$ {{ Number(item.product.sale_price).toFixed(2) }} x {{ item.quantity }}
               </p>
             </div>
@@ -153,7 +153,7 @@
               >
                 <Minus class="w-4 h-4" />
               </button>
-              <span class="w-8 text-center">{{ item.quantity }}</span>
+              <span class="w-8 text-center font-mono">{{ item.quantity }}</span>
               <button
                 class="p-1 hover:text-primary-text cursor-pointer"
                 @click="changeQuantity(i, 1)"
@@ -171,9 +171,9 @@
         </div>
 
         <div v-if="cart.length > 0" class="border-t border pt-4 space-y-3">
-          <div class="flex justify-between font-bold">
+          <div class="flex justify-between font-semibold">
             <span>Total</span>
-            <span>R$ {{ cartTotal.toFixed(2) }}</span>
+            <span class="font-mono">R$ {{ cartTotal.toFixed(2) }}</span>
           </div>
 
           <AppButton type="button" class="w-full" :disabled="submitting" @click="submitSale">

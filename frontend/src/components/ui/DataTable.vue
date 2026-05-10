@@ -75,7 +75,7 @@
           <tr v-for="row in data" v-else :key="row.id" class="hover:bg-surface-elevated/30">
             <td v-for="col in columns" :key="col.key" class="px-4 py-3 text-primary">
               <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
-                {{ row[col.key] }}
+                <span class="font-mono">{{ row[col.key] }}</span>
               </slot>
             </td>
           </tr>

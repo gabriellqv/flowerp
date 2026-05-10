@@ -23,10 +23,10 @@
     <div>
       <span class="text-body text-secondary block">{{ label }}</span>
       <div class="flex items-baseline gap-2">
-        <p class="text-heading font-bold">{{ value }}</p>
+        <p class="text-heading font-semibold font-mono">{{ value }}</p>
         <span
           v-if="change !== undefined && change !== null"
-          class="text-small font-medium"
+          class="text-small font-medium font-mono"
           :class="change >= 0 ? 'text-primary-text' : 'text-error'"
         >
           {{ change >= 0 ? '+' : '' }}{{ change }}%
