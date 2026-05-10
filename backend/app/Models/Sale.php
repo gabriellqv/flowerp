@@ -20,6 +20,8 @@ use Illuminate\Support\Str;
  * @property int $seller_id FK -> usuário vendedor
  * @property string|null $customer_id FK -> cliente (opcional)
  * @property string $total_amount Valor total da venda (decimal 12,2)
+ * @property float $discount Desconto aplicado (decimal 12,2)
+ * @property string|null $payment_method Forma de pagamento (pix, cash, card, etc.)
  * @property string $status Estado: COMPLETED ou CANCELLED
  */
 class Sale extends Model
@@ -34,7 +36,7 @@ class Sale extends Model
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = [
-        'seller_id', 'customer_id', 'total_amount', 'status',
+        'seller_id', 'customer_id', 'total_amount', 'discount', 'payment_method', 'status',
     ];
 
     /**

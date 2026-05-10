@@ -65,6 +65,8 @@ export interface Sale {
   customer?: { id: string; name: string };
   items: SaleItem[];
   total_amount: number;
+  discount: number;
+  payment_method: string | null;
   status: string;
   created_at: string;
 }
