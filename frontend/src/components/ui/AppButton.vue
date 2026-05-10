@@ -17,16 +17,16 @@
   <button
     :type="type ?? 'button'"
     :disabled="disabled"
-    class="font-medium transition-colors cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed"
+    class="font-medium transition-all cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed inline-flex items-center justify-center"
     :class="[
       variant === 'danger'
         ? 'bg-error-bg border border-error-border text-error-text hover:bg-error-bg hover:border-error-hover'
         : variant === 'secondary'
-          ? 'bg-surface-elevated hover:bg-border-input'
-          : 'bg-primary hover:bg-primary-hover',
+          ? 'bg-surface-elevated hover:bg-border-input text-primary-text'
+          : 'bg-primary hover:bg-primary-hover text-white shadow-sm hover:shadow',
       size === 'sm'
-        ? 'px-3 py-1 rounded-button-sm text-small'
-        : 'px-4 py-2 rounded-input text-body',
+        ? 'px-3 py-1.5 rounded-button-sm text-small'
+        : 'px-4 py-2.5 rounded-input text-body',
     ]"
   >
     <slot />

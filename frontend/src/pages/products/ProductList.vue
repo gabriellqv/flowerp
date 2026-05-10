@@ -200,7 +200,7 @@
     <PageHeader title="Produtos">
       <template #actions>
         <AppButton size="sm" @click="navigateToNew">
-          <Plus :size="16" class="mr-1 inline" />
+          <Plus :size="16" class="mr-1.5" />
           Novo Produto
         </AppButton>
       </template>
@@ -233,7 +233,7 @@
           <Package :size="40" class="text-tertiary opacity-30" />
           <p class="text-tertiary text-sm">Nenhum produto encontrado.</p>
           <AppButton size="sm" @click="navigateToNew">
-            <Plus :size="16" class="mr-1 inline" />
+            <Plus :size="16" class="mr-1.5" />
             Cadastrar primeiro produto
           </AppButton>
         </div>

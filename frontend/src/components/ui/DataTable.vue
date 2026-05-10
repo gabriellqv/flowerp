@@ -202,7 +202,7 @@
         <span>Página {{ page }} de {{ totalPages }} ({{ total }} registros)</span>
         <select
           :value="perPage"
-          class="text-xs rounded-input bg-surface-elevated border-border border px-2 py-1 outline-none"
+          class="text-xs rounded-input bg-surface-elevated border-border border pl-2 pr-6 py-1 outline-none"
           @change="emit('update:perPage', Number(($event.target as HTMLSelectElement).value))"
         >
           <option v-for="opt in PER_PAGE_OPTIONS" :key="opt.value" :value="opt.value">

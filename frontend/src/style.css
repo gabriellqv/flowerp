@@ -224,7 +224,7 @@
 
   /* Borda */
   --color-border: #27272a;
-  --color-border-input: #3f3f46;
+  --color-border-input: rgba(39, 39, 42, 0.5);
 
   /* Texto */
   --color-text-primary: #f4f4f5;
@@ -263,4 +263,3 @@
   --color-glass-border: rgba(39, 39, 42, 0.5);
   --color-glass-shine: rgba(82, 82, 91, 0.5);
 }
-
