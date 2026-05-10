@@ -26,6 +26,8 @@
   import TopProductsChart from '@/components/ui/TopProductsChart.vue';
   import RevenueByCategoryChart from '@/components/ui/RevenueByCategoryChart.vue';
 
+  import DashboardSkeleton from '@/components/ui/DashboardSkeleton.vue';
+
   const authStore = useAuthStore();
   const summary = ref<DashboardSummary | null>(null);
   const loading = ref(true);
@@ -55,11 +57,11 @@
   <PageContainer>
     <PageHeader :title="greeting" />
 
-    <div v-if="loading" class="text-tertiary">Carregando...</div>
+    <DashboardSkeleton v-if="loading" />
 
     <template v-else-if="summary">
-      <!-- Cards KPI Principais -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      <!-- KPIs Integrados em Linha Única -->
+      <div class="grid grid-cols-2 md:grid-cols-4 2xl:grid-cols-7 xl:grid-cols-7 gap-4 mb-6">
         <DashboardCard
           label="Receita do Mês"
           :value="formatCurrency(summary.monthly_revenue)"
@@ -91,10 +93,7 @@
             <XCircle class="w-6 h-6 text-error" />
           </template>
         </DashboardCard>
-      </div>
 
-      <!-- Cards KPI Secundários -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <DashboardCard label="Estoque Baixo" :value="String(summary.low_stock_count)">
           <template #icon>
             <AlertTriangle class="w-6 h-6 text-warning" />
@@ -114,23 +113,21 @@
         </DashboardCard>
       </div>
 
-      <!-- Gráfico Principal + Feed -->
+      <!-- Layout Principal (Esquerda 2/3, Direita 1/3) -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-        <div class="lg:col-span-2">
+        <!-- Esquerda -->
+        <div class="lg:col-span-2 flex flex-col gap-4">
           <RevenueChart />
+          <!-- Top Produtos (1/2) + Receita por Categoria (1/2) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TopProductsChart />
+            <RevenueByCategoryChart />
+          </div>
         </div>
-        <div>
-          <ActivityFeed />
-        </div>
-      </div>
 
-      <!-- Gráficos Secundários -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
-          <RevenueByCategoryChart />
-        </div>
-        <div>
-          <TopProductsChart />
+        <!-- Direita (altura sincronizada com a esquerda) -->
+        <div class="lg:col-span-1">
+          <ActivityFeed />
         </div>
       </div>
     </template>
