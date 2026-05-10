@@ -24,11 +24,17 @@ class SaleController extends Controller
     ) {}
 
     /**
-     * Lista vendas com relacionamentos e paginacao.
+     * Lista vendas com relacionamentos, busca e paginação.
+     *
+     * @param  Request  $request  Query params: search, page
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $sales = Sale::with(['seller:id,name', 'customer:id,name'])
+            ->when($request->search, function ($q) use ($request) {
+                $q->whereHas('customer', fn ($c) => $c->where('name', 'like', "%{$request->search}%"))
+                    ->orWhereHas('seller', fn ($s) => $s->where('name', 'like', "%{$request->search}%"));
+            })
             ->latest()
             ->paginate(20);
 
