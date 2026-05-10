@@ -119,6 +119,12 @@
    */
   --opacity-disabled-button: 0.5;
   --opacity-disabled-pagination: 0.3;
+  /*
+   * Glassmorphism Colors
+   */
+  --color-glass-bg: rgba(255, 255, 255, 0.6);
+  --color-glass-border: rgba(255, 255, 255, 0.5);
+  --color-glass-shine: rgba(255, 255, 255, 0.7);
 }
 
 /*
@@ -135,6 +141,8 @@
     font-weight: var(--font-weight-normal);
     line-height: var(--line-height-normal);
     letter-spacing: var(--letter-spacing-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -212,5 +220,10 @@
   /* Success */
   --color-success-bg: rgba(5, 150, 105, 0.1);
   --color-success-border: rgba(5, 150, 105, 0.3);
+
+  /* Glassmorphism Dark */
+  --color-glass-bg: rgba(24, 24, 27, 0.6);
+  --color-glass-border: rgba(39, 39, 42, 0.5);
+  --color-glass-shine: rgba(82, 82, 91, 0.5);
 }
 
