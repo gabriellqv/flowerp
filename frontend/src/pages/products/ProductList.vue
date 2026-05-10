@@ -7,6 +7,8 @@
    * A busca reseta a página para 1.
    * Suporte a ordenação via cabeçalho da tabela com direção
    * alternada (asc/desc) e ícones indicativos.
+   * Inclui seleção em massa, badges de status, toggle ativo/inativo
+   * e seletor de itens por página.
    */
   import { ref, onMounted, watch, computed } from 'vue';
   import { useRouter } from 'vue-router';
@@ -18,7 +20,7 @@
   import PageHeader from '@/components/ui/PageHeader.vue';
   import AppButton from '@/components/ui/AppButton.vue';
   import AppSelect from '@/components/ui/AppSelect.vue';
-  import { Plus, Pencil, Trash2 } from 'lucide-vue-next';
+  import { Plus, Pencil, Trash2, Package, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
   const router = useRouter();
 
@@ -33,6 +35,7 @@
   const selectedCategory = ref('');
   const sortBy = ref('name');
   const sortDir = ref<'asc' | 'desc'>('asc');
+  const selected = ref<string[]>([]);
   let abortController: AbortController | null = null;
 
   const columns = [
@@ -42,6 +45,7 @@
     { key: 'sale_price', label: 'Preço', sortable: true },
     { key: 'stock_quantity', label: 'Estoque', sortable: true },
     { key: 'status', label: 'Status' },
+    { key: 'is_active', label: 'Ativo' },
     { key: 'actions', label: 'Ações' },
   ];
 
@@ -84,6 +88,7 @@
       });
       products.value = data.data;
       total.value = data.total;
+      selected.value = [];
     } catch (e: unknown) {
       const err = e as { code?: string };
       if (err.code === 'ERR_CANCELED') return;
@@ -103,6 +108,10 @@
   });
 
   watch(page, fetchProducts);
+  watch(perPage, () => {
+    page.value = 1;
+    fetchProducts();
+  });
   watch(search, () => {
     page.value = 1;
     fetchProducts();
@@ -137,13 +146,46 @@
     fetchProducts();
   }
 
+  async function deleteSelected() {
+    if (!confirm(`Deseja excluir ${selected.value.length} produto(s)?`)) return;
+    await api.post('/products/bulk-delete', { ids: selected.value });
+    selected.value = [];
+    fetchProducts();
+  }
+
+  function toggleSelect(id: string) {
+    const idx = selected.value.indexOf(id);
+    if (idx === -1) {
+      selected.value.push(id);
+    } else {
+      selected.value.splice(idx, 1);
+    }
+  }
+
+  function toggleSelectAll() {
+    if (selected.value.length === products.value.length) {
+      selected.value = [];
+    } else {
+      selected.value = products.value.map((p) => p.id);
+    }
+  }
+
+  async function toggleActive(product: Product) {
+    await api.patch(`/products/${product.id}/toggle-active`);
+    product.is_active = !product.is_active;
+  }
+
   /**
-   * Define a classe e o texto do status de estoque.
+   * Retorna as classes CSS da badge de status de estoque.
    */
-  function stockStatusClass(product: Product): string {
-    if (product.stock_quantity === 0) return 'text-error-text';
-    if (product.stock_quantity <= product.min_stock) return 'text-warning';
-    return 'text-primary-text';
+  function badgeClass(product: Product): string {
+    if (product.stock_quantity === 0) {
+      return 'bg-error/10 text-error border-error/20';
+    }
+    if (product.stock_quantity <= product.min_stock) {
+      return 'bg-warning/10 text-warning border-warning/20';
+    }
+    return 'bg-primary/10 text-primary-text border-primary/20';
   }
 
   function stockStatusLabel(product: Product): string {
@@ -158,7 +200,7 @@
     <PageHeader title="Produtos">
       <template #actions>
         <AppButton size="sm" @click="navigateToNew">
-          <Plus :size="16" class="mr-1 inline" />
+          <Plus :size="16" class="mr-1.5" />
           Novo Produto
         </AppButton>
       </template>
@@ -178,10 +220,25 @@
       :refreshing="refreshing"
       :sort-by="sortBy"
       :sort-dir="sortDir"
+      :selected="selected"
       @update:page="page = $event"
+      @update:per-page="perPage = $event"
       @search="search = $event"
       @sort="onSort"
+      @toggle-select="toggleSelect"
+      @toggle-select-all="toggleSelectAll"
     >
+      <template #empty>
+        <div class="flex flex-col items-center justify-center gap-3">
+          <Package :size="40" class="text-tertiary opacity-30" />
+          <p class="text-tertiary text-sm">Nenhum produto encontrado.</p>
+          <AppButton size="sm" @click="navigateToNew">
+            <Plus :size="16" class="mr-1.5" />
+            Cadastrar primeiro produto
+          </AppButton>
+        </div>
+      </template>
+
       <template #cell-sku="{ row }">
         <span class="font-mono">{{ row.sku }}</span>
       </template>
@@ -195,7 +252,22 @@
         <span class="font-mono">{{ row.stock_quantity }}</span>
       </template>
       <template #cell-status="{ row }">
-        <span :class="stockStatusClass(row)">{{ stockStatusLabel(row) }}</span>
+        <span
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border"
+          :class="badgeClass(row)"
+        >
+          {{ stockStatusLabel(row) }}
+        </span>
+      </template>
+      <template #cell-is_active="{ row }">
+        <button
+          class="cursor-pointer text-secondary hover:text-primary-text transition-colors"
+          :title="row.is_active ? 'Desativar produto' : 'Ativar produto'"
+          @click="toggleActive(row)"
+        >
+          <ToggleRight v-if="row.is_active" :size="20" class="text-primary-text" />
+          <ToggleLeft v-else :size="20" class="text-tertiary" />
+        </button>
       </template>
       <template #cell-actions="{ row }">
         <div class="flex items-center gap-1">
@@ -214,6 +286,13 @@
             <Trash2 :size="16" />
           </button>
         </div>
+      </template>
+
+      <template #bulk-actions>
+        <AppButton size="sm" variant="danger" @click="deleteSelected">
+          <Trash2 :size="14" class="mr-1 inline" />
+          Excluir selecionados ({{ selected.length }})
+        </AppButton>
       </template>
     </DataTable>
   </PageContainer>
