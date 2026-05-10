@@ -11,6 +11,7 @@
   import type { ChartComponentRef } from 'vue-chartjs';
   import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
   import api from '@/services/api';
+  import { formatCurrency } from '@/utils/format';
   import type { IChartDataPoint } from '@/types';
   import { glassTooltipConfig } from '@/utils/chartConfig';
   import { PieChart } from 'lucide-vue-next';
@@ -36,10 +37,6 @@
       chart.update('active');
     }
   });
-
-  function formatCurrency(value: number): string {
-    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  }
 
   const colors = [
     'rgba(5, 150, 105, 0.8)',

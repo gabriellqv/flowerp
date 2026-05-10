@@ -7,6 +7,7 @@
    */
   import { ref, onMounted, computed } from 'vue';
   import api from '@/services/api';
+  import { formatCurrency } from '@/utils/format';
   import { useAuthStore } from '@/stores/auth';
   import type { DashboardSummary } from '@/types';
   import {
@@ -44,13 +45,6 @@
     summary.value = data;
     loading.value = false;
   });
-
-  /**
-   * Formata valor monetário em reais.
-   */
-  function formatCurrency(value: number): string {
-    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  }
 </script>
 
 <template>
