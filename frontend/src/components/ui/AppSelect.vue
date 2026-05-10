@@ -1,9 +1,9 @@
 <script setup lang="ts" generic="T extends string | number">
   /**
-   * Select customizado premium com suporte a v-model e tipagem generica.
+   * Select customizado premium com suporte a v-model e tipagem genérica.
    *
-   * Substitui o select nativo feio do navegador por uma UI 100% customizavel,
-   * com animacoes, hover states consistentes e suporte a click-outside.
+   * Substitui o select nativo do navegador por uma UI 100% customizável,
+   * com animações, hover states consistentes e suporte a click-outside.
    */
   import { ref, computed } from 'vue';
   import { onClickOutside } from '@vueuse/core';
@@ -19,7 +19,6 @@
   }>();
 
   const isOpen = ref(false);
-  // eslint-disable-next-line no-undef
   const containerRef = ref<HTMLElement | null>(null);
 
   onClickOutside(containerRef, () => {
@@ -46,7 +45,7 @@
       :id="id"
       type="button"
       :disabled="disabled"
-      class="w-full pl-4 pr-10 py-2 rounded-input bg-[var(--color-glass-bg)] backdrop-blur-md border border-[var(--color-glass-border)] text-left flex items-center justify-between outline-none text-sm disabled:opacity-50 transition-all cursor-pointer relative overflow-hidden"
+      class="w-full pl-4 pr-10 py-2 rounded-input bg-[var(--color-glass-bg)] backdrop-blur-md border border-[var(--color-glass-border)] text-left flex items-center justify-between outline-none focus:ring-0 text-sm disabled:opacity-50 transition-all cursor-pointer relative overflow-hidden"
       :class="[
         isOpen
           ? 'border-primary text-[var(--color-text-primary)]'

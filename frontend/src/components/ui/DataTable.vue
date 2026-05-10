@@ -12,6 +12,7 @@
    */
   import { ref, computed } from 'vue';
   import AppInput from '@/components/ui/AppInput.vue';
+  import AppSelect from '@/components/ui/AppSelect.vue';
   import AppButton from '@/components/ui/AppButton.vue';
   import { ArrowUpDown, ArrowUp, ArrowDown, Square, CheckSquare } from 'lucide-vue-next';
 
@@ -89,12 +90,7 @@
 
 <template>
   <div class="space-y-4">
-    <AppInput
-      v-model="searchQuery"
-      class="max-w-sm !bg-surface-secondary"
-      placeholder="Buscar..."
-      @input="onSearch"
-    />
+    <AppInput v-model="searchQuery" class="max-w-sm" placeholder="Buscar..." @input="onSearch" />
 
     <div
       class="overflow-x-auto rounded-card border border-[var(--color-glass-border)] bg-[var(--color-glass-bg)] backdrop-blur-xl shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] relative"
@@ -200,15 +196,12 @@
     >
       <div class="flex items-center gap-3">
         <span>Página {{ page }} de {{ totalPages }} ({{ total }} registros)</span>
-        <select
-          :value="perPage"
-          class="text-xs rounded-input bg-surface-elevated border-border border pl-2 pr-6 py-1 outline-none"
-          @change="emit('update:perPage', Number(($event.target as HTMLSelectElement).value))"
-        >
-          <option v-for="opt in PER_PAGE_OPTIONS" :key="opt.value" :value="opt.value">
-            {{ opt.label }}
-          </option>
-        </select>
+        <AppSelect
+          :options="PER_PAGE_OPTIONS"
+          :model-value="perPage"
+          class="w-36 text-xs"
+          @update:model-value="emit('update:perPage', Number($event))"
+        />
       </div>
 
       <div class="flex flex-wrap gap-2">

@@ -38,6 +38,7 @@ export default tseslint.config(
         performance: 'readonly',
         confirm: 'readonly',
         AbortController: 'readonly',
+        HTMLElement: 'readonly',
       },
     },
   },

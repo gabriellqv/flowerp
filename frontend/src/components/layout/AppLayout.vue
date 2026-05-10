@@ -1,14 +1,16 @@
 <script setup lang="ts">
   /**
-   * Layout principal da aplicacao com sidebar compacta de icones.
+   * Layout principal da aplicação com sidebar compacta de ícones.
    *
-   * Sidebar estreita (w-16) com apenas icones SVG centralizados.
-   * O logo do FlowERP substitui o texto, e cada item de navegacao
+   * Sidebar estreita (w-16) com apenas ícones SVG centralizados.
+   * O logo do FlowERP substitui o texto, e cada item de navegação
    * exibe tooltip via atributo title para acessibilidade.
+   * Inclui botão "Voltar ao topo" com glassmorphism que aparece
+   * ao rolar a página para baixo.
    */
   import { useAuthStore } from '@/stores/auth';
   import { useRouter } from 'vue-router';
-  import { computed, type Component } from 'vue';
+  import { ref, computed, type Component } from 'vue';
   import {
     LayoutDashboard,
     Package,
@@ -17,11 +19,25 @@
     Sun,
     Moon,
     LogOut,
+    ArrowUp,
   } from 'lucide-vue-next';
   import { isDark, toggleTheme } from '@/composables/useTheme';
 
   const auth = useAuthStore();
   const router = useRouter();
+
+  const mainRef = ref<HTMLElement | null>(null);
+  const showScrollTop = ref(false);
+
+  function onScroll() {
+    if (mainRef.value) {
+      showScrollTop.value = mainRef.value.scrollTop > 300;
+    }
+  }
+
+  function scrollToTop() {
+    mainRef.value?.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   interface INavItem {
     label: string;
@@ -78,7 +94,7 @@
         <img src="/favicon.svg" alt="FlowERP" class="w-8 h-8" />
       </RouterLink>
 
-      <!-- Navegacao -->
+      <!-- Navegação -->
       <nav class="flex-1 flex flex-col items-center gap-1">
         <RouterLink
           v-for="item in navItems"
@@ -92,14 +108,14 @@
         </RouterLink>
       </nav>
 
-      <!-- Acoes do rodape -->
+      <!-- Ações do rodapé -->
       <div class="flex flex-col items-center gap-2">
         <button
           class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors cursor-pointer"
           :title="isDark ? 'Tema claro' : 'Tema escuro'"
           @click="toggleTheme()"
         >
-          <Sun v-if="isDark" :size="20" class="text-primary-text" />
+          <Sun v-if="isDark" :size="20" class="text-secondary" />
           <Moon v-else :size="20" class="text-secondary" />
         </button>
 
@@ -113,8 +129,27 @@
       </div>
     </aside>
 
-    <main class="flex-1 overflow-y-auto relative z-10">
+    <main ref="mainRef" class="flex-1 overflow-y-auto relative z-10 pb-20" @scroll="onScroll">
       <RouterView />
     </main>
+
+    <!-- Scroll to Top Button (Glassmorphism) -->
+    <transition
+      enter-active-class="transition duration-300 ease-out"
+      enter-from-class="opacity-0 translate-y-8"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-200 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-8"
+    >
+      <button
+        v-show="showScrollTop"
+        class="fixed bottom-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-glass-bg)] backdrop-blur-md border border-zinc-400 dark:border-[var(--color-glass-border)] text-primary hover:border-primary dark:hover:border-primary shadow-[0_4px_14px_rgba(0,0,0,0.25)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all z-50 group cursor-pointer"
+        title="Voltar ao topo"
+        @click="scrollToTop"
+      >
+        <ArrowUp :size="20" class="relative z-10 group-hover:-translate-y-1 transition-transform" />
+      </button>
+    </transition>
   </div>
 </template>
