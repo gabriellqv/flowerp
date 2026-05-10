@@ -58,6 +58,16 @@ const router = createRouter({
           name: 'customers',
           component: () => import('@/pages/customers/CustomerList.vue'),
         },
+        {
+          path: 'customers/new',
+          name: 'new-customer',
+          component: () => import('@/pages/customers/CustomerForm.vue'),
+        },
+        {
+          path: 'customers/:id/edit',
+          name: 'edit-customer',
+          component: () => import('@/pages/customers/CustomerForm.vue'),
+        },
       ],
     },
   ],

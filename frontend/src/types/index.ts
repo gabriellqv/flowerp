@@ -22,6 +22,15 @@ export interface Category {
   name: string;
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  document: string;
+  is_active: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
