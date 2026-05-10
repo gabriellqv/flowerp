@@ -45,9 +45,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Clientes
     Route::get('/customers', [CustomerController::class, 'index']);
+    Route::post('/customers/bulk-delete', [CustomerController::class, 'bulkDelete'])
+        ->middleware('role:admin,manager');
     Route::post('/customers', [CustomerController::class, 'store'])
         ->middleware('role:admin,manager');
     Route::get('/customers/{customer}', [CustomerController::class, 'show']);
+    Route::put('/customers/{customer}', [CustomerController::class, 'update'])
+        ->middleware('role:admin,manager');
+    Route::patch('/customers/{customer}/toggle-active', [CustomerController::class, 'toggleActive'])
+        ->middleware('role:admin,manager');
 
     // Vendas
     Route::get('/sales', [SaleController::class, 'index']);
