@@ -36,6 +36,8 @@ export default tseslint.config(
         setTimeout: 'readonly',
         requestAnimationFrame: 'readonly',
         performance: 'readonly',
+        confirm: 'readonly',
+        AbortController: 'readonly',
       },
     },
   },

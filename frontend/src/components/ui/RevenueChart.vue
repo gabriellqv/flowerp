@@ -16,6 +16,7 @@
   import type { ChartComponentRef } from 'vue-chartjs';
   import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
   import api from '@/services/api';
+  import { formatCurrency } from '@/utils/format';
   import type { IChartDataPoint } from '@/types';
   import { glassTooltipConfig } from '@/utils/chartConfig';
   import { TrendingUp } from 'lucide-vue-next';
@@ -61,10 +62,6 @@
 
   onMounted(fetchChart);
   watch(activePeriod, fetchChart);
-
-  function formatCurrency(value: number): string {
-    return `R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  }
 </script>
 
 <template>
