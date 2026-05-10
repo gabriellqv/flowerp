@@ -25,8 +25,8 @@ class SaleService
      * O que acontece dentro da transacao:
      * 1. Valida estoque de cada item (lockForUpdate previne race condition)
      * 2. Decrementa estoque e registra movimentacoes
-     * 3. Cria venda e itens
-     * 4. Cria entrada financeira (receita)
+     * 3. Cria venda e itens com desconto e forma de pagamento
+     * 4. Cria entrada financeira (receita) com valor liquido
      * 5. Loga atividade
      *
      * Se qualquer passo falhar, TUDO e revertido.
@@ -74,8 +74,12 @@ class SaleService
                 'seller_id' => $seller->id,
                 'customer_id' => $saleData['customer_id'] ?? null,
                 'total_amount' => $totalAmount,
+                'discount' => $saleData['discount'] ?? 0,
+                'payment_method' => $saleData['payment_method'] ?? null,
                 'status' => 'COMPLETED',
             ]);
+
+            $netAmount = $totalAmount - ($saleData['discount'] ?? 0);
 
             foreach ($saleData['items'] as $item) {
                 SaleItem::create([
@@ -88,7 +92,7 @@ class SaleService
 
             FinancialEntry::create([
                 'type' => 'INCOME',
-                'amount' => $totalAmount,
+                'amount' => $netAmount,
                 'description' => "Venda #{$sale->id}",
                 'category' => 'SALE',
                 'sale_id' => $sale->id,
