@@ -12,7 +12,7 @@
 
 <template>
   <div class="flex items-center justify-between">
-    <h1 class="text-heading font-bold">{{ title }}</h1>
+    <h1 class="text-heading font-semibold">{{ title }}</h1>
     <div v-if="$slots.actions" class="flex items-center gap-2">
       <slot name="actions" />
     </div>

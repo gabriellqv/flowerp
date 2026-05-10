@@ -73,7 +73,7 @@
         {{ value || '-' }}
       </template>
       <template #cell-document="{ value }">
-        {{ value || '-' }}
+        <span class="font-mono">{{ value || '-' }}</span>
       </template>
     </DataTable>
   </PageContainer>

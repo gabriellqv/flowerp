@@ -66,10 +66,18 @@
       @update:page="page = $event"
       @search="search = $event"
     >
+      <template #cell-sku="{ row }">
+        <span class="font-mono">{{ row.sku }}</span>
+      </template>
       <template #cell-category="{ row }">
         {{ row.category?.name || '-' }}
       </template>
-      <template #cell-sale_price="{ row }">R$ {{ Number(row.sale_price).toFixed(2) }}</template>
+      <template #cell-sale_price="{ row }">
+        <span class="font-mono">R$ {{ Number(row.sale_price).toFixed(2) }}</span>
+      </template>
+      <template #cell-stock_quantity="{ row }">
+        <span class="font-mono">{{ row.stock_quantity }}</span>
+      </template>
       <template #cell-status="{ row }">
         <span
           :class="
