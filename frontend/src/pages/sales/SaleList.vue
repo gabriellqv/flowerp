@@ -97,6 +97,10 @@
     if (status === 'CANCELLED') return 'Cancelada';
     return 'Concluída';
   }
+
+  function viewSale(sale: Sale) {
+    router.push(`/sales/${sale.id}`);
+  }
 </script>
 
 <template>
@@ -130,7 +134,12 @@
       </template>
 
       <template #cell-id="{ row }">
-        <span class="font-mono">#{{ row.id.slice(0, 8) }}</span>
+        <button
+          class="font-mono cursor-pointer hover:text-primary transition-colors underline-offset-2 hover:underline"
+          @click="viewSale(row)"
+        >
+          #{{ row.id.slice(0, 8) }}
+        </button>
       </template>
       <template #cell-customer="{ row }">
         {{ row.customer?.name || '-' }}

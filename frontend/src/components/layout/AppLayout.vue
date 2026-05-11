@@ -20,6 +20,7 @@
     Moon,
     LogOut,
     ArrowUp,
+    Tag,
   } from 'lucide-vue-next';
   import { isDark, toggleTheme } from '@/composables/useTheme';
 
@@ -56,6 +57,7 @@
     }
 
     items.push({ label: 'Clientes', to: '/customers', icon: Users });
+    items.push({ label: 'Categorias', to: '/categories', icon: Tag });
 
     return items;
   });
