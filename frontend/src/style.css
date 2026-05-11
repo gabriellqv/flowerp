@@ -160,6 +160,29 @@
 }
 
 /*
+ * Sobrescreve o focus ring azul padrao do @tailwindcss/forms.
+ *
+ * Colocado fora de qualquer @layer para ter prioridade maxima.
+ * Todos os campos de formulario usam a cor primaria (emerald)
+ * no focus, mantendo consistencia visual com o design system.
+ */
+input:focus,
+textarea:focus,
+select:focus,
+[type='text']:focus,
+[type='email']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='url']:focus {
+  --tw-ring-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--color-primary) !important;
+}
+
+/*
  * Classe utilitaria para fonte monoespaçada.
  *
  * Uso seletivo em elementos tecnicos: IDs, valores monetarios,

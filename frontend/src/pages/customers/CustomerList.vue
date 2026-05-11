@@ -15,6 +15,7 @@
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
   import AppButton from '@/components/ui/AppButton.vue';
+  import ConfirmModal from '@/components/ui/ConfirmModal.vue';
   import { Plus, Pencil, Trash2, Users, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
   const router = useRouter();
@@ -27,7 +28,27 @@
   const refreshing = ref(false);
   const search = ref('');
   const selected = ref<string[]>([]);
+  const confirmVisible = ref(false);
+  const confirmMessage = ref('');
+  let confirmCallback: (() => void) | null = null;
   let abortController: AbortController | null = null;
+
+  function openConfirm(message: string, callback: () => void) {
+    confirmMessage.value = message;
+    confirmCallback = callback;
+    confirmVisible.value = true;
+  }
+
+  function onConfirm() {
+    confirmVisible.value = false;
+    if (confirmCallback) confirmCallback();
+    confirmCallback = null;
+  }
+
+  function onCancel() {
+    confirmVisible.value = false;
+    confirmCallback = null;
+  }
 
   const columns = [
     { key: 'name', label: 'Nome' },
@@ -92,16 +113,18 @@
   }
 
   async function deleteCustomer(customer: Customer) {
-    if (!confirm(`Deseja excluir o cliente "${customer.name}"?`)) return;
-    await api.patch(`/customers/${customer.id}/toggle-active`);
-    fetchCustomers();
+    openConfirm(`Deseja excluir o cliente "${customer.name}"?`, async () => {
+      await api.patch(`/customers/${customer.id}/toggle-active`);
+      fetchCustomers();
+    });
   }
 
   async function deleteSelected() {
-    if (!confirm(`Deseja excluir ${selected.value.length} cliente(s)?`)) return;
-    await api.post('/customers/bulk-delete', { ids: selected.value });
-    selected.value = [];
-    fetchCustomers();
+    openConfirm(`Deseja excluir ${selected.value.length} cliente(s)?`, async () => {
+      await api.post('/customers/bulk-delete', { ids: selected.value });
+      selected.value = [];
+      fetchCustomers();
+    });
   }
 
   function toggleSelect(id: string) {
@@ -209,5 +232,14 @@
         </AppButton>
       </template>
     </DataTable>
+
+    <ConfirmModal
+      :visible="confirmVisible"
+      title="Confirmar exclusão"
+      :message="confirmMessage"
+      confirm-text="Excluir"
+      @confirm="onConfirm"
+      @cancel="onCancel"
+    />
   </PageContainer>
 </template>

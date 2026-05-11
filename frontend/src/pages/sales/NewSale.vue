@@ -252,25 +252,42 @@
                 {{ formatCurrency(item.product.sale_price) }} &times; {{ item.quantity }}
               </p>
             </div>
-            <div class="flex items-center gap-1">
+            <div class="flex items-center gap-1.5">
               <button
-                class="p-1 hover:text-primary-text cursor-pointer"
+                class="w-7 h-7 flex items-center justify-center rounded-button-sm bg-[var(--color-glass-bg)] backdrop-blur-sm border border-[var(--color-glass-border)] text-secondary hover:text-primary-text hover:border-primary/30 transition-all cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed"
+                :disabled="item.quantity <= 1"
                 @click="changeQuantity(i, -1)"
               >
-                <Minus class="w-4 h-4" />
+                <Minus class="w-3.5 h-3.5" />
               </button>
-              <span class="w-8 text-center font-mono">{{ item.quantity }}</span>
+              <input
+                type="number"
+                :value="item.quantity"
+                min="1"
+                :max="item.product.stock_quantity"
+                class="w-10 h-7 text-center font-mono text-sm bg-[var(--color-glass-bg)] backdrop-blur-sm border border-[var(--color-glass-border)] rounded-button-sm outline-none focus:border-primary/40 transition-colors [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                @change="
+                  (e: Event) => {
+                    const val = parseInt((e.target as HTMLInputElement).value) || 1;
+                    const clamped = Math.max(1, Math.min(val, item.product.stock_quantity));
+                    item.quantity = clamped;
+                    (e.target as HTMLInputElement).value = String(clamped);
+                  }
+                "
+              />
               <button
-                class="p-1 hover:text-primary-text cursor-pointer"
+                class="w-7 h-7 flex items-center justify-center rounded-button-sm bg-[var(--color-glass-bg)] backdrop-blur-sm border border-[var(--color-glass-border)] text-secondary hover:text-primary-text hover:border-primary/30 transition-all cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed"
+                :disabled="item.quantity >= item.product.stock_quantity"
                 @click="changeQuantity(i, 1)"
               >
-                <Plus class="w-4 h-4" />
+                <Plus class="w-3.5 h-3.5" />
               </button>
               <button
-                class="p-1 hover:text-error-text ml-1 cursor-pointer"
+                class="w-7 h-7 flex items-center justify-center rounded-button-sm hover:bg-error/10 hover:border-error/20 border border-transparent text-tertiary hover:text-error transition-all cursor-pointer ml-0.5"
+                title="Remover item"
                 @click="removeFromCart(i)"
               >
-                <Trash2 class="w-4 h-4" />
+                <Trash2 class="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
