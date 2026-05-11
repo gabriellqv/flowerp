@@ -54,6 +54,11 @@ const router = createRouter({
           component: () => import('@/pages/sales/NewSale.vue'),
         },
         {
+          path: 'sales/:id',
+          name: 'sale-detail',
+          component: () => import('@/pages/sales/SaleDetail.vue'),
+        },
+        {
           path: 'customers',
           name: 'customers',
           component: () => import('@/pages/customers/CustomerList.vue'),
@@ -67,6 +72,11 @@ const router = createRouter({
           path: 'customers/:id/edit',
           name: 'edit-customer',
           component: () => import('@/pages/customers/CustomerForm.vue'),
+        },
+        {
+          path: 'categories',
+          name: 'categories',
+          component: () => import('@/pages/categories/CategoryList.vue'),
         },
       ],
     },
