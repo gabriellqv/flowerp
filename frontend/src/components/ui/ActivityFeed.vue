@@ -7,6 +7,7 @@
    * descrição da ação e timestamp relativo.
    */
   import { ref, onMounted } from 'vue';
+  import { RouterLink } from 'vue-router';
   import api from '@/services/api';
   import type { IActivityLogEntry } from '@/types';
   import { ClipboardList } from 'lucide-vue-next';
@@ -74,12 +75,13 @@
     ></div>
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-body font-semibold">Atividade Recente</h3>
-      <button
+      <RouterLink
+        to="/activities"
         class="text-xs text-primary-text hover:underline cursor-pointer transition-colors"
         title="Ver todas as atividades"
       >
         Ver todas
-      </button>
+      </RouterLink>
     </div>
 
     <div v-if="loading" class="flex flex-col gap-4 mt-2">

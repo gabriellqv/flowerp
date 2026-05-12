@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\ActivityLog;
 use App\Models\Product;
 use App\Models\Sale;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -116,6 +118,34 @@ class DashboardService
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get(['id', 'user_id', 'action', 'entity', 'details', 'created_at']);
+    }
+
+    /**
+     * Retorna atividades paginadas com suporte a busca e filtro.
+     *
+     * Permite buscar por nome do usuário e filtrar por tipo de ação.
+     * Utilizado na página de histórico completo de atividades.
+     *
+     * @param  Request  $request  Requisição com query params (search, action, per_page)
+     */
+    public function getPaginatedActivity(Request $request): LengthAwarePaginator
+    {
+        $query = ActivityLog::with('user:id,name')
+            ->orderByDesc('created_at');
+
+        if ($search = $request->query('search')) {
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        if ($action = $request->query('action')) {
+            $query->where('action', $action);
+        }
+
+        $perPage = (int) $request->query('per_page', 15);
+
+        return $query->paginate($perPage, ['id', 'user_id', 'action', 'entity', 'details', 'created_at']);
     }
 
     /**
