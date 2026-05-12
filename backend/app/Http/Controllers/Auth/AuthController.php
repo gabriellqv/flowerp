@@ -76,4 +76,52 @@ class AuthController extends Controller
     {
         return response()->json($request->user()->only(['id', 'name', 'email', 'role']));
     }
+
+    /**
+     * Atualiza os dados de perfil do usuario logado.
+     *
+     * @param  Request  $request  Request com nome e email
+     * @return JsonResponse Dados atualizados do usuario
+     */
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$request->user()->id],
+        ]);
+
+        $request->user()->update($request->only(['name', 'email']));
+
+        return response()->json($request->user()->only(['id', 'name', 'email', 'role']));
+    }
+
+    /**
+     * Atualiza a senha do usuario logado.
+     *
+     * Exige confirmacao da senha atual antes de permitir a troca.
+     *
+     * @param  Request  $request  Request com current_password e password
+     * @return JsonResponse Mensagem de sucesso
+     *
+     * @throws ValidationException Caso a senha atual esteja incorreta
+     */
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        if (! Hash::check($request->current_password, $request->user()->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['Senha atual incorreta.'],
+            ]);
+        }
+
+        $request->user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['message' => 'Senha alterada com sucesso.']);
+    }
 }

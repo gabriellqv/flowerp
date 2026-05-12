@@ -93,6 +93,11 @@ const router = createRouter({
           name: 'activities',
           component: () => import('@/pages/ActivityLog.vue'),
         },
+        {
+          path: 'profile',
+          name: 'profile',
+          component: () => import('@/pages/Profile.vue'),
+        },
       ],
     },
     {

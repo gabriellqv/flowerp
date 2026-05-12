@@ -114,6 +114,14 @@
 
       <!-- Ações do rodapé -->
       <div class="flex flex-col items-center gap-2">
+        <RouterLink
+          to="/profile"
+          class="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary-text hover:bg-primary/25 transition-colors"
+          title="Meu Perfil"
+        >
+          {{ auth.user?.name?.charAt(0)?.toUpperCase() ?? '?' }}
+        </RouterLink>
+
         <button
           class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors cursor-pointer"
           :title="isDark ? 'Tema claro' : 'Tema escuro'"
