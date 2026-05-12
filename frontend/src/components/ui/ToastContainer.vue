@@ -38,7 +38,7 @@
 
           <!-- Botão fechar -->
           <button
-            class="shrink-0 w-5 h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-tertiary hover:text-primary-text"
+            class="shrink-0 w-5 h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-tertiary hover:text-primary-text cursor-pointer"
           >
             <X :size="12" />
           </button>

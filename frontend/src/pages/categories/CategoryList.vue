@@ -1,14 +1,14 @@
 <script setup lang="ts">
   /**
-   * Listagem de categorias com DataTable, busca e criacao inline.
+   * Listagem de categorias com DataTable, busca e acoes completas.
    *
-   * Carrega categorias no mount com busca local (todas ja estao
-   * em memoria, pois o endpoint retorna lista completa).
-   * Permite criar nova categoria via modal inline com validacao
-   * basica de nome duplicado e campo obrigatorio.
-   * Exibicao condicional do botao de criar baseado no role do usuario.
+   * Exibe categorias em ordem alfabetica com busca local.
+   * Inclui botao Nova Categoria (redireciona para o form),
+   * edicao via form dedicado, e exclusao com confirmacao.
+   * Exibicao condicional dos botoes baseada no role do usuario.
    */
   import { ref, onMounted, computed } from 'vue';
+  import { useRouter } from 'vue-router';
   import api from '@/services/api';
   import type { Category } from '@/types';
   import { useAuthStore } from '@/stores/auth';
@@ -17,9 +17,10 @@
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
   import AppButton from '@/components/ui/AppButton.vue';
-  import AppInput from '@/components/ui/AppInput.vue';
-  import { Plus, Tag, X } from 'lucide-vue-next';
+  import ConfirmModal from '@/components/ui/ConfirmModal.vue';
+  import { Plus, Tag, Pencil, Trash2 } from 'lucide-vue-next';
 
+  const router = useRouter();
   const auth = useAuthStore();
   const { showToast } = useToast();
 
@@ -27,14 +28,33 @@
   const categories = ref<Category[]>([]);
   const loading = ref(true);
   const search = ref('');
-  const showingCreate = ref(false);
-  const newName = ref('');
-  const saving = ref(false);
-  const error = ref('');
+  const confirmVisible = ref(false);
+  const confirmMessage = ref('');
+  let confirmCallback: (() => void) | null = null;
 
-  const canCreate = computed(() => auth.isAdmin || auth.isManager);
+  const canManage = computed(() => auth.isAdmin || auth.isManager);
 
-  const columns = [{ key: 'name', label: 'Nome' }];
+  function openConfirm(message: string, callback: () => void) {
+    confirmMessage.value = message;
+    confirmCallback = callback;
+    confirmVisible.value = true;
+  }
+
+  function onConfirm() {
+    confirmVisible.value = false;
+    if (confirmCallback) confirmCallback();
+    confirmCallback = null;
+  }
+
+  function onCancel() {
+    confirmVisible.value = false;
+    confirmCallback = null;
+  }
+
+  const columns = [
+    { key: 'name', label: 'Nome' },
+    { key: 'actions', label: 'Ações' },
+  ];
 
   onMounted(async () => {
     const { data } = await api.get<Category[]>('/categories');
@@ -56,85 +76,39 @@
     }
   }
 
-  async function handleCreate() {
-    error.value = '';
-    const name = newName.value.trim();
-
-    if (!name) {
-      error.value = 'Nome da categoria e obrigatorio.';
-      return;
-    }
-
-    if (allCategories.value.some((c) => c.name.toLowerCase() === name.toLowerCase())) {
-      error.value = 'Ja existe uma categoria com este nome.';
-      return;
-    }
-
-    saving.value = true;
-    try {
-      const { data } = await api.post<Category>('/categories', { name });
-      allCategories.value.push(data);
-      allCategories.value.sort((a, b) => a.name.localeCompare(b.name));
-      categories.value = allCategories.value.filter(
-        (c) => !search.value || c.name.toLowerCase().includes(search.value.toLowerCase()),
-      );
-      newName.value = '';
-      showingCreate.value = false;
-      showToast(`Categoria "${data.name}" criada com sucesso.`);
-    } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      error.value = err?.response?.data?.message ?? 'Erro ao criar categoria.';
-    } finally {
-      saving.value = false;
-    }
+  function navigateToNew() {
+    router.push('/categories/new');
   }
 
-  function cancelCreate() {
-    newName.value = '';
-    error.value = '';
-    showingCreate.value = false;
+  function editCategory(category: Category) {
+    router.push(`/categories/${category.id}/edit`);
+  }
+
+  async function deleteCategory(category: Category) {
+    openConfirm(`Deseja excluir a categoria "${category.name}"?`, async () => {
+      try {
+        await api.delete(`/categories/${category.id}`);
+        allCategories.value = allCategories.value.filter((c) => c.id !== category.id);
+        categories.value = categories.value.filter((c) => c.id !== category.id);
+        showToast(`Categoria "${category.name}" excluida.`);
+      } catch (e: unknown) {
+        const err = e as { response?: { data?: { message?: string } } };
+        showToast(err?.response?.data?.message ?? 'Erro ao excluir categoria.', 'error');
+      }
+    });
   }
 </script>
 
 <template>
   <PageContainer>
     <PageHeader title="Categorias">
-      <template v-if="canCreate" #actions>
-        <AppButton size="sm" @click="showingCreate = true">
+      <template v-if="canManage" #actions>
+        <AppButton size="sm" @click="navigateToNew">
           <Plus :size="16" class="mr-1.5" />
           Nova Categoria
         </AppButton>
       </template>
     </PageHeader>
-
-    <!-- Modal de criacao inline -->
-    <div
-      v-if="showingCreate"
-      class="p-5 rounded-card border border-[var(--color-glass-border)] bg-[var(--color-glass-bg)] backdrop-blur-xl shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)]"
-    >
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-sm font-semibold">Nova Categoria</h2>
-        <button
-          class="p-1 rounded-input hover:bg-surface-elevated transition-colors cursor-pointer text-secondary hover:text-primary-text"
-          @click="cancelCreate"
-        >
-          <X :size="16" />
-        </button>
-      </div>
-
-      <div v-if="error" class="mb-3 text-xs text-error">{{ error }}</div>
-
-      <div class="flex items-end gap-3">
-        <div class="flex-1">
-          <label class="block text-xs text-secondary mb-1">Nome</label>
-          <AppInput v-model="newName" placeholder="Nome da categoria" @keyup.enter="handleCreate" />
-        </div>
-        <AppButton :disabled="saving" @click="handleCreate">
-          {{ saving ? 'Salvando...' : 'Salvar' }}
-        </AppButton>
-        <AppButton variant="secondary" @click="cancelCreate">Cancelar</AppButton>
-      </div>
-    </div>
 
     <DataTable
       :columns="columns"
@@ -149,7 +123,7 @@
         <div class="flex flex-col items-center justify-center gap-3">
           <Tag :size="40" class="text-tertiary opacity-30" />
           <p class="text-tertiary text-sm">Nenhuma categoria encontrada.</p>
-          <AppButton v-if="canCreate" size="sm" @click="showingCreate = true">
+          <AppButton v-if="canManage" size="sm" @click="navigateToNew">
             <Plus :size="16" class="mr-1.5" />
             Criar primeira categoria
           </AppButton>
@@ -159,6 +133,34 @@
       <template #cell-name="{ value }">
         <span>{{ value }}</span>
       </template>
+
+      <template v-if="canManage" #cell-actions="{ row }">
+        <div class="flex items-center gap-1">
+          <button
+            class="p-1.5 rounded-input hover:bg-surface-elevated transition-colors cursor-pointer text-secondary hover:text-primary-text"
+            title="Editar categoria"
+            @click="editCategory(row)"
+          >
+            <Pencil :size="16" />
+          </button>
+          <button
+            class="p-1.5 rounded-input hover:bg-error-bg transition-colors cursor-pointer text-secondary hover:text-error"
+            title="Excluir categoria"
+            @click="deleteCategory(row)"
+          >
+            <Trash2 :size="16" />
+          </button>
+        </div>
+      </template>
     </DataTable>
+
+    <ConfirmModal
+      :visible="confirmVisible"
+      title="Confirmar exclusao"
+      :message="confirmMessage"
+      confirm-text="Excluir"
+      @confirm="onConfirm"
+      @cancel="onCancel"
+    />
   </PageContainer>
 </template>
