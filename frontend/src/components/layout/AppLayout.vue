@@ -21,6 +21,7 @@
     LogOut,
     ArrowUp,
     Tag,
+    ClipboardList,
   } from 'lucide-vue-next';
   import { isDark, toggleTheme } from '@/composables/useTheme';
 
@@ -47,17 +48,18 @@
   }
 
   const navItems = computed<INavItem[]>(() => {
-    const items: INavItem[] = [
-      { label: 'Dashboard', to: '/', icon: LayoutDashboard },
-      { label: 'Produtos', to: '/products', icon: Package },
-    ];
+    const items: INavItem[] = [{ label: 'Dashboard', to: '/', icon: LayoutDashboard }];
 
     if (auth.canSell) {
       items.push({ label: 'Vendas', to: '/sales', icon: ShoppingCart });
     }
 
-    items.push({ label: 'Clientes', to: '/customers', icon: Users });
-    items.push({ label: 'Categorias', to: '/categories', icon: Tag });
+    items.push(
+      { label: 'Produtos', to: '/products', icon: Package },
+      { label: 'Clientes', to: '/customers', icon: Users },
+      { label: 'Categorias', to: '/categories', icon: Tag },
+      { label: 'Atividades', to: '/activities', icon: ClipboardList },
+    );
 
     return items;
   });
