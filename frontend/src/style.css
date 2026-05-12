@@ -289,3 +289,17 @@ select:focus,
   --color-glass-border: rgba(39, 39, 42, 0.5);
   --color-glass-shine: rgba(82, 82, 91, 0.5);
 }
+
+/* 
+ * Oculta as setas nativas (spin-buttons) de inputs numéricos 
+ * para manter o design clean do glassmorphism. 
+ */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}
