@@ -12,6 +12,7 @@
   import api from '@/services/api';
   import type { Product, Category, Customer, CartItem } from '@/types';
   import { formatCurrency } from '@/utils/format';
+  import { useToast } from '@/composables/useToast';
   import { Plus, Minus, Trash2 } from 'lucide-vue-next';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -21,6 +22,7 @@
   import AlertBox from '@/components/ui/AlertBox.vue';
 
   const router = useRouter();
+  const { showToast } = useToast();
 
   const products = ref<Product[]>([]);
   const categories = ref<Category[]>([]);
@@ -142,6 +144,7 @@
           quantity: i.quantity,
         })),
       });
+      showToast(`Venda de ${formatCurrency(cartTotal.value)} finalizada!`);
       router.push('/sales');
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };

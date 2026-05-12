@@ -15,6 +15,7 @@
   import api from '@/services/api';
   import type { Product, PaginatedResponse, Category } from '@/types';
   import { formatCurrency } from '@/utils/format';
+  import { useToast } from '@/composables/useToast';
   import DataTable from '@/components/ui/DataTable.vue';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -24,6 +25,7 @@
   import { Plus, Pencil, Trash2, Package, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
   const router = useRouter();
+  const { showToast } = useToast();
 
   const products = ref<Product[]>([]);
   const total = ref(0);
@@ -164,13 +166,16 @@
   async function deleteProduct(product: Product) {
     openConfirm(`Deseja excluir o produto "${product.name}"?`, async () => {
       await api.delete(`/products/${product.id}`);
+      showToast('Produto excluído com sucesso.');
       fetchProducts();
     });
   }
 
   async function deleteSelected() {
-    openConfirm(`Deseja excluir ${selected.value.length} produto(s)?`, async () => {
+    const count = selected.value.length;
+    openConfirm(`Deseja excluir ${count} produto(s)?`, async () => {
       await api.post('/products/bulk-delete', { ids: selected.value });
+      showToast(`${count} produto(s) excluído(s).`);
       selected.value = [];
       fetchProducts();
     });
@@ -196,6 +201,7 @@
   async function toggleActive(product: Product) {
     await api.patch(`/products/${product.id}/toggle-active`);
     product.is_active = !product.is_active;
+    showToast(product.is_active ? 'Produto ativado.' : 'Produto desativado.', 'info');
   }
 
   /**
