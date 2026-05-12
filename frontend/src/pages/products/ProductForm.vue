@@ -167,7 +167,7 @@
         <textarea
           id="description"
           v-model="form.description"
-          rows="3"
+          rows="6"
           class="w-full px-4 py-2 rounded-input bg-[var(--color-glass-bg)] backdrop-blur-md border border-[var(--color-glass-border)] text-[var(--color-text-primary)] placeholder:text-tertiary focus:border-primary outline-none text-sm transition-all resize-none"
           placeholder="Descrição opcional do produto"
         ></textarea>

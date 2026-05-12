@@ -11,4 +11,5 @@
    * de notificações toast (Teleportado via body).
    */
   import ToastContainer from '@/components/ui/ToastContainer.vue';
+  import '@/composables/useTheme'; // Inicializa o tema globalmente no boot
 </script>
