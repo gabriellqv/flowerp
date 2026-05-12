@@ -152,6 +152,7 @@
   async function toggleActive(customer: Customer) {
     await api.patch(`/customers/${customer.id}/toggle-active`);
     customer.is_active = !customer.is_active;
+    showToast(customer.is_active ? 'Cliente ativado.' : 'Cliente desativado.', 'info');
   }
 </script>
 
