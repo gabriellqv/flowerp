@@ -203,12 +203,20 @@
       </template>
       <template #cell-is_active="{ row }">
         <button
-          class="cursor-pointer text-secondary hover:text-primary-text transition-colors"
+          class="cursor-pointer transition-colors"
           :title="row.is_active ? 'Desativar cliente' : 'Ativar cliente'"
           @click="toggleActive(row)"
         >
-          <ToggleRight v-if="row.is_active" :size="20" class="text-primary-text" />
-          <ToggleLeft v-else :size="20" class="text-tertiary" />
+          <ToggleRight
+            v-if="row.is_active"
+            :size="20"
+            class="text-primary-text hover:text-primary transition-colors"
+          />
+          <ToggleLeft
+            v-else
+            :size="20"
+            class="text-tertiary hover:text-secondary transition-colors"
+          />
         </button>
       </template>
       <template #cell-actions="{ row }">

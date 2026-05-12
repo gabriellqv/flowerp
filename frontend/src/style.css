@@ -35,6 +35,9 @@
   --color-text-secondary: #6b7280;
   --color-text-tertiary: #9ca3af;
   --color-text-disabled: #d1d5db;
+  
+  --color-secondary: var(--color-text-secondary);
+  --color-tertiary: var(--color-text-tertiary);
 
   /*
    * Cor primaria / acao (marca)
