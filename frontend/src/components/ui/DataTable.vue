@@ -90,7 +90,20 @@
 
 <template>
   <div class="space-y-4">
-    <AppInput v-model="searchQuery" class="max-w-sm" placeholder="Buscar..." @input="onSearch" />
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 min-h-[40px]"
+    >
+      <AppInput
+        v-model="searchQuery"
+        class="w-full sm:max-w-sm"
+        placeholder="Buscar..."
+        @input="onSearch"
+      />
+
+      <div v-if="hasSelection" class="flex-shrink-0 transition-all duration-300">
+        <slot name="bulk-actions" />
+      </div>
+    </div>
 
     <div
       class="overflow-x-auto rounded-card border border-[var(--color-glass-border)] bg-[var(--color-glass-bg)] backdrop-blur-xl shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] relative"
@@ -205,10 +218,6 @@
       </div>
 
       <div class="flex flex-wrap gap-2">
-        <div v-if="hasSelection" class="mr-2">
-          <slot name="bulk-actions" />
-        </div>
-
         <div class="flex gap-2">
           <AppButton
             size="sm"
