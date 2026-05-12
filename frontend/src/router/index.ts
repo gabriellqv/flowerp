@@ -88,6 +88,11 @@ const router = createRouter({
           name: 'edit-category',
           component: () => import('@/pages/categories/CategoryForm.vue'),
         },
+        {
+          path: 'activities',
+          name: 'activities',
+          component: () => import('@/pages/ActivityLog.vue'),
+        },
       ],
     },
     {

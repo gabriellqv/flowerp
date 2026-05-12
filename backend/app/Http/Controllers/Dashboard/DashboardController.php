@@ -62,6 +62,17 @@ class DashboardController extends Controller
     }
 
     /**
+     * Retorna as atividades paginadas com busca e filtro.
+     *
+     * @param  Request  $request  Requisição com query params
+     * @return JsonResponse Atividades paginadas em formato JSON
+     */
+    public function activityLog(Request $request): JsonResponse
+    {
+        return response()->json($this->dashboardService->getPaginatedActivity($request));
+    }
+
+    /**
      * Retorna os 5 produtos mais vendidos no mes atual.
      *
      * @return JsonResponse Top produtos em formato JSON
