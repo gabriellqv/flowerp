@@ -11,6 +11,7 @@
   import { useRouter } from 'vue-router';
   import api from '@/services/api';
   import type { Customer, PaginatedResponse } from '@/types';
+  import { useToast } from '@/composables/useToast';
   import DataTable from '@/components/ui/DataTable.vue';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -19,6 +20,7 @@
   import { Plus, Pencil, Trash2, Users, ToggleLeft, ToggleRight } from 'lucide-vue-next';
 
   const router = useRouter();
+  const { showToast } = useToast();
 
   const customers = ref<Customer[]>([]);
   const total = ref(0);
@@ -115,13 +117,16 @@
   async function deleteCustomer(customer: Customer) {
     openConfirm(`Deseja excluir o cliente "${customer.name}"?`, async () => {
       await api.patch(`/customers/${customer.id}/toggle-active`);
+      showToast('Cliente desativado com sucesso.');
       fetchCustomers();
     });
   }
 
   async function deleteSelected() {
-    openConfirm(`Deseja excluir ${selected.value.length} cliente(s)?`, async () => {
+    const count = selected.value.length;
+    openConfirm(`Deseja excluir ${count} cliente(s)?`, async () => {
       await api.post('/customers/bulk-delete', { ids: selected.value });
+      showToast(`${count} cliente(s) excluído(s).`);
       selected.value = [];
       fetchCustomers();
     });
@@ -198,12 +203,20 @@
       </template>
       <template #cell-is_active="{ row }">
         <button
-          class="cursor-pointer text-secondary hover:text-primary-text transition-colors"
+          class="cursor-pointer transition-colors"
           :title="row.is_active ? 'Desativar cliente' : 'Ativar cliente'"
           @click="toggleActive(row)"
         >
-          <ToggleRight v-if="row.is_active" :size="20" class="text-primary-text" />
-          <ToggleLeft v-else :size="20" class="text-tertiary" />
+          <ToggleRight
+            v-if="row.is_active"
+            :size="20"
+            class="text-primary-text hover:text-primary transition-colors"
+          />
+          <ToggleLeft
+            v-else
+            :size="20"
+            class="text-tertiary hover:text-secondary transition-colors"
+          />
         </button>
       </template>
       <template #cell-actions="{ row }">

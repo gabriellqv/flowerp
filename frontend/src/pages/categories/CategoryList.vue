@@ -12,6 +12,7 @@
   import api from '@/services/api';
   import type { Category } from '@/types';
   import { useAuthStore } from '@/stores/auth';
+  import { useToast } from '@/composables/useToast';
   import DataTable from '@/components/ui/DataTable.vue';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -20,6 +21,7 @@
   import { Plus, Tag, X } from 'lucide-vue-next';
 
   const auth = useAuthStore();
+  const { showToast } = useToast();
 
   const allCategories = ref<Category[]>([]);
   const categories = ref<Category[]>([]);
@@ -78,6 +80,7 @@
       );
       newName.value = '';
       showingCreate.value = false;
+      showToast(`Categoria "${data.name}" criada com sucesso.`);
     } catch (e: unknown) {
       const err = e as { response?: { data?: { message?: string } } };
       error.value = err?.response?.data?.message ?? 'Erro ao criar categoria.';

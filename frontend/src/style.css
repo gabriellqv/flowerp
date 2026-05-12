@@ -35,6 +35,9 @@
   --color-text-secondary: #6b7280;
   --color-text-tertiary: #9ca3af;
   --color-text-disabled: #d1d5db;
+  
+  --color-secondary: var(--color-text-secondary);
+  --color-tertiary: var(--color-text-tertiary);
 
   /*
    * Cor primaria / acao (marca)
@@ -285,4 +288,18 @@ select:focus,
   --color-glass-bg: rgba(24, 24, 27, 0.6);
   --color-glass-border: rgba(39, 39, 42, 0.5);
   --color-glass-shine: rgba(82, 82, 91, 0.5);
+}
+
+/* 
+ * Oculta as setas nativas (spin-buttons) de inputs numéricos 
+ * para manter o design clean do glassmorphism. 
+ */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
 }

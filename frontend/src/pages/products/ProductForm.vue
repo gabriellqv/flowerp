@@ -11,6 +11,7 @@
   import { useRouter, useRoute } from 'vue-router';
   import api from '@/services/api';
   import type { Product, Category } from '@/types';
+  import { useToast } from '@/composables/useToast';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
   import AppInput from '@/components/ui/AppInput.vue';
@@ -21,6 +22,7 @@
 
   const router = useRouter();
   const route = useRoute();
+  const { showToast } = useToast();
 
   const isEdit = computed(() => !!route.params.id);
   const title = computed(() => (isEdit.value ? 'Editar Produto' : 'Novo Produto'));
@@ -91,8 +93,10 @@
     try {
       if (isEdit.value) {
         await api.put(`/products/${route.params.id}`, payload);
+        showToast('Produto atualizado com sucesso.');
       } else {
         await api.post('/products', payload);
+        showToast('Produto criado com sucesso.');
       }
       router.push('/products');
     } catch (e: unknown) {
@@ -163,7 +167,7 @@
         <textarea
           id="description"
           v-model="form.description"
-          rows="3"
+          rows="10"
           class="w-full px-4 py-2 rounded-input bg-[var(--color-glass-bg)] backdrop-blur-md border border-[var(--color-glass-border)] text-[var(--color-text-primary)] placeholder:text-tertiary focus:border-primary outline-none text-sm transition-all resize-none"
           placeholder="Descrição opcional do produto"
         ></textarea>
