@@ -32,8 +32,8 @@
         response?: { data?: { message?: string; errors?: { email?: string[] } } };
       };
       error.value =
+        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
-        err.response?.data?.errors?.email?.[0] ||
         'Erro ao fazer login.';
     } finally {
       loading.value = false;

@@ -104,8 +104,8 @@
         response?: { data?: { message?: string; errors?: Record<string, string[]> } };
       };
       error.value =
+        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
-        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(', ')) ||
         'Erro ao salvar produto.';
     } finally {
       submitting.value = false;

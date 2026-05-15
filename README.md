@@ -1,4 +1,4 @@
-# FlowerERP
+# FlowERP
 
 Sistema de gestao empresarial moderno, rapido e escalavel.
 Projeto desenvolvido como monorepo contendo um backend em Laravel (API REST) e um frontend em Vue 3 (Composition API).
