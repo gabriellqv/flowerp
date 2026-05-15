@@ -121,6 +121,8 @@ class SaleService
                 ],
             ]);
 
+            app(DashboardService::class)->clearCache();
+
             return $sale->load(['items.product', 'customer']);
         });
     }

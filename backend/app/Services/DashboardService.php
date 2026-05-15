@@ -10,6 +10,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -32,58 +33,60 @@ class DashboardService
      */
     public function getSummary(): array
     {
-        $thisMonthStart = Carbon::now()->startOfMonth();
-        $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
-        $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+        return Cache::remember('dashboard.summary', now()->addHour(), function () {
+            $thisMonthStart = Carbon::now()->startOfMonth();
+            $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
+            $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
 
-        // Receita e vendas do mês atual
-        $currentRevenue = (float) Sale::thisMonth()
-            ->completed()
-            ->sum('total_amount');
+            // Receita e vendas do mês atual
+            $currentRevenue = (float) Sale::thisMonth()
+                ->completed()
+                ->sum('total_amount');
 
-        $currentSalesCount = Sale::thisMonth()
-            ->completed()
-            ->count();
+            $currentSalesCount = Sale::thisMonth()
+                ->completed()
+                ->count();
 
-        // Receita e vendas do mês anterior
-        $previousRevenue = (float) Sale::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-            ->where('status', SaleStatus::COMPLETED)
-            ->sum('total_amount');
+            // Receita e vendas do mês anterior
+            $previousRevenue = (float) Sale::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->where('status', SaleStatus::COMPLETED)
+                ->sum('total_amount');
 
-        $previousSalesCount = Sale::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-            ->where('status', SaleStatus::COMPLETED)
-            ->count();
+            $previousSalesCount = Sale::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->where('status', SaleStatus::COMPLETED)
+                ->count();
 
-        // Estoque separado: zerado vs baixo
-        $activeProducts = Product::active();
-        $zeroStockCount = (clone $activeProducts)
-            ->where('stock_quantity', 0)
-            ->count();
-        $lowStockCount = (clone $activeProducts)
-            ->where('stock_quantity', '>', 0)
-            ->whereColumn('stock_quantity', '<=', 'min_stock')
-            ->count();
+            // Estoque separado: zerado vs baixo
+            $activeProducts = Product::active();
+            $zeroStockCount = (clone $activeProducts)
+                ->where('stock_quantity', 0)
+                ->count();
+            $lowStockCount = (clone $activeProducts)
+                ->where('stock_quantity', '>', 0)
+                ->whereColumn('stock_quantity', '<=', 'min_stock')
+                ->count();
 
-        // Valor total em estoque (baseado no preço de custo)
-        $totalStockValue = (float) Product::active()
-            ->sum(DB::raw('stock_quantity * cost_price'));
+            // Valor total em estoque (baseado no preço de custo)
+            $totalStockValue = (float) Product::active()
+                ->sum(DB::raw('stock_quantity * cost_price'));
 
-        // Ticket medio do mes atual
-        $averageTicket = $currentSalesCount > 0 ? $currentRevenue / $currentSalesCount : 0;
+            // Ticket medio do mes atual
+            $averageTicket = $currentSalesCount > 0 ? $currentRevenue / $currentSalesCount : 0;
 
-        return [
-            'active_products' => Product::active()->count(),
-            'monthly_revenue' => $currentRevenue,
-            'previous_revenue' => $previousRevenue,
-            'revenue_change' => $this->calculateChange($currentRevenue, $previousRevenue),
-            'low_stock_count' => $lowStockCount,
-            'zero_stock_count' => $zeroStockCount,
-            'monthly_sales_count' => $currentSalesCount,
-            'previous_sales_count' => $previousSalesCount,
-            'sales_change' => $this->calculateChange($currentSalesCount, $previousSalesCount),
-            'average_ticket' => $averageTicket,
-            'total_stock_value' => $totalStockValue,
-        ];
+            return [
+                'active_products' => Product::active()->count(),
+                'monthly_revenue' => $currentRevenue,
+                'previous_revenue' => $previousRevenue,
+                'revenue_change' => $this->calculateChange($currentRevenue, $previousRevenue),
+                'low_stock_count' => $lowStockCount,
+                'zero_stock_count' => $zeroStockCount,
+                'monthly_sales_count' => $currentSalesCount,
+                'previous_sales_count' => $previousSalesCount,
+                'sales_change' => $this->calculateChange($currentSalesCount, $previousSalesCount),
+                'average_ticket' => $averageTicket,
+                'total_stock_value' => $totalStockValue,
+            ];
+        });
     }
 
     /**
@@ -97,11 +100,13 @@ class DashboardService
      */
     public function getRevenueChart(string $period = '6m'): array
     {
-        return match ($period) {
-            '7d' => $this->getRevenueByDay(7),
-            '12m' => $this->getRevenueByMonth(12),
-            default => $this->getRevenueByMonth(6),
-        };
+        return Cache::remember("dashboard.revenue_chart.{$period}", now()->addHour(), function () use ($period) {
+            return match ($period) {
+                '7d' => $this->getRevenueByDay(7),
+                '12m' => $this->getRevenueByMonth(12),
+                default => $this->getRevenueByMonth(6),
+            };
+        });
     }
 
     /**
@@ -230,18 +235,20 @@ class DashboardService
      */
     public function getTopProducts(): Collection
     {
-        $thisMonthStart = Carbon::now()->startOfMonth();
+        return Cache::remember('dashboard.top_products', now()->addHour(), function () {
+            $thisMonthStart = Carbon::now()->startOfMonth();
 
-        return DB::table('sale_items')
-            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->where('sales.created_at', '>=', $thisMonthStart)
-            ->where('sales.status', SaleStatus::COMPLETED)
-            ->select('products.name as label', DB::raw('SUM(sale_items.quantity) as value'))
-            ->groupBy('products.id', 'products.name')
-            ->orderByDesc('value')
-            ->limit(5)
-            ->get();
+            return DB::table('sale_items')
+                ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+                ->join('products', 'sale_items.product_id', '=', 'products.id')
+                ->where('sales.created_at', '>=', $thisMonthStart)
+                ->where('sales.status', SaleStatus::COMPLETED)
+                ->select('products.name as label', DB::raw('SUM(sale_items.quantity) as value'))
+                ->groupBy('products.id', 'products.name')
+                ->orderByDesc('value')
+                ->limit(5)
+                ->get();
+        });
     }
 
     /**
@@ -251,17 +258,35 @@ class DashboardService
      */
     public function getRevenueByCategory(): Collection
     {
-        $thisMonthStart = Carbon::now()->startOfMonth();
+        return Cache::remember('dashboard.revenue_by_category', now()->addHour(), function () {
+            $thisMonthStart = Carbon::now()->startOfMonth();
 
-        return DB::table('sale_items')
-            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->join('products', 'sale_items.product_id', '=', 'products.id')
-            ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->where('sales.created_at', '>=', $thisMonthStart)
-            ->where('sales.status', SaleStatus::COMPLETED)
-            ->select('categories.name as label', DB::raw('SUM(sale_items.quantity * sale_items.unit_price) as value'))
-            ->groupBy('categories.id', 'categories.name')
-            ->orderByDesc('value')
-            ->get();
+            return DB::table('sale_items')
+                ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+                ->join('products', 'sale_items.product_id', '=', 'products.id')
+                ->join('categories', 'products.category_id', '=', 'categories.id')
+                ->where('sales.created_at', '>=', $thisMonthStart)
+                ->where('sales.status', SaleStatus::COMPLETED)
+                ->select('categories.name as label', DB::raw('SUM(sale_items.quantity * sale_items.unit_price) as value'))
+                ->groupBy('categories.id', 'categories.name')
+                ->orderByDesc('value')
+                ->get();
+        });
+    }
+
+    /**
+     * Invalida todos os caches do dashboard.
+     *
+     * Deve ser chamado sempre que uma venda for realizada
+     * ou o estoque sofrer movimentações.
+     */
+    public function clearCache(): void
+    {
+        Cache::forget('dashboard.summary');
+        Cache::forget('dashboard.revenue_chart.7d');
+        Cache::forget('dashboard.revenue_chart.6m');
+        Cache::forget('dashboard.revenue_chart.12m');
+        Cache::forget('dashboard.top_products');
+        Cache::forget('dashboard.revenue_by_category');
     }
 }
