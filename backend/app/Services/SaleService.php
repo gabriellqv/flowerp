@@ -2,6 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\FinancialEntryCategory;
+use App\Enums\FinancialEntryType;
+use App\Enums\SaleStatus;
+use App\Enums\StockMovementReason;
+use App\Enums\StockMovementType;
 use App\Models\ActivityLog;
 use App\Models\FinancialEntry;
 use App\Models\Product;
@@ -64,9 +69,9 @@ class SaleService
 
                 StockMovement::create([
                     'product_id' => $product->id,
-                    'type' => 'OUT',
+                    'type' => StockMovementType::OUT,
                     'quantity' => $item['quantity'],
-                    'reason' => 'SALE',
+                    'reason' => StockMovementReason::SALE,
                 ]);
             }
 
@@ -76,7 +81,7 @@ class SaleService
                 'total_amount' => $totalAmount,
                 'discount' => $saleData['discount'] ?? 0,
                 'payment_method' => $saleData['payment_method'] ?? null,
-                'status' => 'COMPLETED',
+                'status' => SaleStatus::COMPLETED,
             ]);
 
             $netAmount = $totalAmount - ($saleData['discount'] ?? 0);
@@ -91,10 +96,10 @@ class SaleService
             }
 
             FinancialEntry::create([
-                'type' => 'INCOME',
+                'type' => FinancialEntryType::INCOME,
                 'amount' => $netAmount,
                 'description' => "Venda #{$sale->id}",
-                'category' => 'SALE',
+                'category' => FinancialEntryCategory::SALE,
                 'sale_id' => $sale->id,
                 'is_paid' => true,
                 'paid_at' => now(),

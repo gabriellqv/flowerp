@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\SaleStatus;
 use App\Models\ActivityLog;
 use App\Models\Product;
 use App\Models\Sale;
@@ -37,20 +38,20 @@ class DashboardService
 
         // Receita e vendas do mês atual
         $currentRevenue = (float) Sale::where('created_at', '>=', $thisMonthStart)
-            ->where('status', 'COMPLETED')
+            ->where('status', SaleStatus::COMPLETED)
             ->sum('total_amount');
 
         $currentSalesCount = Sale::where('created_at', '>=', $thisMonthStart)
-            ->where('status', 'COMPLETED')
+            ->where('status', SaleStatus::COMPLETED)
             ->count();
 
         // Receita e vendas do mês anterior
         $previousRevenue = (float) Sale::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-            ->where('status', 'COMPLETED')
+            ->where('status', SaleStatus::COMPLETED)
             ->sum('total_amount');
 
         $previousSalesCount = Sale::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-            ->where('status', 'COMPLETED')
+            ->where('status', SaleStatus::COMPLETED)
             ->count();
 
         // Estoque separado: zerado vs baixo
@@ -176,7 +177,7 @@ class DashboardService
         $results = [];
 
         $salesByDay = Sale::where('created_at', '>=', $start)
-            ->where('status', 'COMPLETED')
+            ->where('status', SaleStatus::COMPLETED)
             ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
             ->groupBy('date')
             ->pluck('total', 'date');
@@ -204,7 +205,7 @@ class DashboardService
         $results = [];
 
         $salesByMonth = Sale::where('created_at', '>=', Carbon::now()->subMonths($months)->startOfMonth())
-            ->where('status', 'COMPLETED')
+            ->where('status', SaleStatus::COMPLETED)
             ->selectRaw("strftime('%Y-%m', created_at) as month, SUM(total_amount) as total")
             ->groupBy('month')
             ->pluck('total', 'month');
@@ -235,7 +236,7 @@ class DashboardService
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->where('sales.created_at', '>=', $thisMonthStart)
-            ->where('sales.status', 'COMPLETED')
+            ->where('sales.status', SaleStatus::COMPLETED)
             ->select('products.name as label', DB::raw('SUM(sale_items.quantity) as value'))
             ->groupBy('products.id', 'products.name')
             ->orderByDesc('value')
@@ -257,7 +258,7 @@ class DashboardService
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->where('sales.created_at', '>=', $thisMonthStart)
-            ->where('sales.status', 'COMPLETED')
+            ->where('sales.status', SaleStatus::COMPLETED)
             ->select('categories.name as label', DB::raw('SUM(sale_items.quantity * sale_items.unit_price) as value'))
             ->groupBy('categories.id', 'categories.name')
             ->orderByDesc('value')
