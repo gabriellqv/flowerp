@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Customers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,19 +38,12 @@ class CustomerController extends Controller
     /**
      * Cadastra um novo cliente.
      *
-     * @param  Request  $request  Dados do cliente (name, email, phone, document)
+     * @param  StoreCustomerRequest  $request  Dados validados do cliente
      * @return JsonResponse Cliente criado (201)
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreCustomerRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:200'],
-            'email' => ['nullable', 'email'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'document' => ['nullable', 'string', 'max:20', 'unique:customers'],
-        ]);
-
-        $customer = Customer::create($request->only(['name', 'email', 'phone', 'document']));
+        $customer = Customer::create($request->validated());
 
         return response()->json($customer, 201);
     }
@@ -66,19 +61,12 @@ class CustomerController extends Controller
     /**
      * Atualiza os dados de um cliente existente.
      *
-     * @param  Request  $request  Dados parciais a atualizar
+     * @param  UpdateCustomerRequest  $request  Dados validados a atualizar
      * @param  Customer  $customer  Cliente resolvido via Route Model Binding
      */
-    public function update(Request $request, Customer $customer): JsonResponse
+    public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
     {
-        $request->validate([
-            'name' => ['sometimes', 'required', 'string', 'max:200'],
-            'email' => ['nullable', 'email'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'document' => ['nullable', 'string', 'max:20', "unique:customers,document,{$customer->id}"],
-        ]);
-
-        $customer->update($request->only(['name', 'email', 'phone', 'document']));
+        $customer->update($request->validated());
 
         return response()->json($customer);
     }

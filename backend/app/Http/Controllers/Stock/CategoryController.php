@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Stock;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCategoryRequest;
+use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
  * Controller de categorias de produtos.
@@ -36,14 +37,12 @@ class CategoryController extends Controller
     /**
      * Cria uma nova categoria.
      *
-     * @param  Request  $request  Dados da categoria (name)
+     * @param  StoreCategoryRequest  $request  Dados validados da categoria
      * @return JsonResponse Categoria criada (201)
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $request->validate(['name' => ['required', 'string', 'max:100', 'unique:categories']]);
-
-        $category = Category::create($request->only('name'));
+        $category = Category::create($request->validated());
 
         return response()->json($category, 201);
     }
@@ -51,17 +50,13 @@ class CategoryController extends Controller
     /**
      * Atualiza uma categoria existente.
      *
-     * @param  Request  $request  Dados da categoria (name)
+     * @param  UpdateCategoryRequest  $request  Dados validados da categoria
      * @param  Category  $category  Categoria a ser atualizada
      * @return JsonResponse Categoria atualizada
      */
-    public function update(Request $request, Category $category): JsonResponse
+    public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:100', 'unique:categories,name,'.$category->id],
-        ]);
-
-        $category->update($request->only('name'));
+        $category->update($request->validated());
 
         return response()->json($category);
     }

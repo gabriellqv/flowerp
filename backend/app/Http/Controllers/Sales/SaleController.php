@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreSaleRequest;
 use App\Models\Sale;
 use App\Services\SaleService;
 use Illuminate\Http\JsonResponse;
@@ -42,23 +43,16 @@ class SaleController extends Controller
     }
 
     /**
-     * Executa uma nova venda com validacao de estoque.
+     * Executa uma nova venda com validação de estoque.
      *
-     * @param  Request  $request  Dados da venda (customer_id, items)
+     * @param  StoreSaleRequest  $request  Dados validados da venda
      * @return JsonResponse Venda criada (201) ou erro de estoque (422)
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreSaleRequest $request): JsonResponse
     {
-        $request->validate([
-            'customer_id' => ['nullable', 'uuid', 'exists:customers,id'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'uuid', 'exists:products,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
-        ]);
-
         try {
             $sale = $this->saleService->executeSale(
-                $request->only(['customer_id', 'items']),
+                $request->validated(),
                 $request->user(),
             );
 
