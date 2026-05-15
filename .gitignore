@@ -17,5 +17,8 @@ Thumbs.db
 # Node
 node_modules/
 
+# Analise local do projeto
+ANALISE-PROJETO.md
+
 # Husky
 .husky/_/
