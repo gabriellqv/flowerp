@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
 use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
+use App\Services\CustomerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -20,19 +21,22 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class CustomerController extends Controller
 {
     /**
+     * @param  CustomerService  $customerService  Serviço de lógica de clientes
+     */
+    public function __construct(
+        private readonly CustomerService $customerService,
+    ) {}
+
+    /**
      * Lista clientes ativos com busca e paginação.
      *
      * @param  Request  $request  Query params: search, page
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $customers = Customer::query()
-            ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%")
-                ->orWhere('email', 'like', "%{$request->search}%")
-                ->orWhere('document', 'like', "%{$request->search}%"))
-            ->where('is_active', true)
-            ->latest()
-            ->paginate(20);
+        $customers = $this->customerService->listCustomers(
+            search: $request->query('search')
+        );
 
         return CustomerResource::collection($customers);
     }
@@ -45,7 +49,7 @@ class CustomerController extends Controller
      */
     public function store(StoreCustomerRequest $request): JsonResponse
     {
-        $customer = Customer::create($request->validated());
+        $customer = $this->customerService->createCustomer($request->validated());
 
         return response()->json(new CustomerResource($customer), 201);
     }
@@ -68,7 +72,7 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer): CustomerResource
     {
-        $customer->update($request->validated());
+        $customer = $this->customerService->updateCustomer($customer, $request->validated());
 
         return new CustomerResource($customer);
     }
@@ -81,7 +85,7 @@ class CustomerController extends Controller
      */
     public function toggleActive(Customer $customer): CustomerResource
     {
-        $customer->update(['is_active' => ! $customer->is_active]);
+        $customer = $this->customerService->toggleCustomerActive($customer);
 
         return new CustomerResource($customer);
     }
@@ -99,7 +103,7 @@ class CustomerController extends Controller
             'ids.*' => ['string', 'uuid'],
         ]);
 
-        Customer::whereIn('id', $request->input('ids'))->update(['is_active' => false]);
+        $this->customerService->bulkDeactivateCustomers($request->input('ids'));
 
         return response()->json(null, 204);
     }
