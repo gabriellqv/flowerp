@@ -32,8 +32,8 @@
         response?: { data?: { message?: string; errors?: { email?: string[] } } };
       };
       error.value =
+        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
-        err.response?.data?.errors?.email?.[0] ||
         'Erro ao fazer login.';
     } finally {
       loading.value = false;
@@ -45,6 +45,7 @@
   <div class="min-h-screen flex items-center justify-center bg-surface">
     <form
       class="w-full max-w-sm bg-surface-secondary rounded-card border border p-8 space-y-6"
+      novalidate
       @submit.prevent="handleLogin"
     >
       <h1 class="text-heading font-semibold text-center text-primary-text">FlowERP</h1>

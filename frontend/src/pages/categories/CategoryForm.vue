@@ -62,8 +62,8 @@
         response?: { data?: { message?: string; errors?: Record<string, string[]> } };
       };
       error.value =
+        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
-        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(', ')) ||
         'Erro ao salvar categoria.';
     } finally {
       submitting.value = false;
@@ -90,6 +90,7 @@
 
     <form
       class="max-w-2xl bg-[var(--color-glass-bg)] backdrop-blur-xl border border-[var(--color-glass-border)] rounded-card p-card shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] space-y-5"
+      novalidate
       @submit.prevent="handleSubmit"
     >
       <div>

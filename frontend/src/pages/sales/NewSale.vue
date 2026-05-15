@@ -147,8 +147,11 @@
       showToast(`Venda de ${formatCurrency(cartTotal.value)} finalizada!`);
       router.push('/sales');
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string } } };
-      error.value = err.response?.data?.message || 'Erro ao finalizar venda.';
+      const err = e as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } };
+      error.value =
+        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
+        err.response?.data?.message ||
+        'Erro ao finalizar venda.';
     } finally {
       submitting.value = false;
     }
