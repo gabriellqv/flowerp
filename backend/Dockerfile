@@ -1,31 +1,35 @@
-FROM php:8.2-fpm
+FROM php:8.3-fpm-alpine AS base
 
-# Instala dependências do sistema
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    sqlite3 \
-    libsqlite3-dev
+RUN apk add --no-cache \
+    linux-headers \
+    $PHPIZE_DEPS \
+    && docker-php-ext-install pdo pdo_mysql opcache
 
-# Limpa cache do apt
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Instala extensões do PHP
-RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
-
-# Instala o Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Define o diretório de trabalho
 WORKDIR /var/www/html
 
-# Copia os arquivos do projeto
-COPY . /var/www/html
+FROM base AS development
 
-# Ajusta permissões (útil se as pastas de cache e logs já existirem)
+COPY composer.json composer.lock ./
+RUN composer install --prefer-dist --no-progress
+
+COPY . .
+
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true
+
+FROM base AS production
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
+
+COPY . .
+
+RUN php artisan config:cache && \
+    php artisan route:cache
+
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+USER www-data
+
+CMD ["sh", "-c", "php artisan migrate --force && php-fpm"]
