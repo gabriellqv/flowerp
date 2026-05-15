@@ -132,6 +132,7 @@
 
     <form
       class="max-w-2xl bg-[var(--color-glass-bg)] backdrop-blur-xl border border-[var(--color-glass-border)] rounded-card p-card shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] space-y-5"
+      novalidate
       @submit.prevent="handleSubmit"
     >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -171,7 +171,7 @@
 
           <AlertBox v-if="profileError" class="mb-4">{{ profileError }}</AlertBox>
 
-          <form class="space-y-4" @submit.prevent="handleProfileSubmit">
+          <form class="space-y-4" novalidate @submit.prevent="handleProfileSubmit">
             <div>
               <label class="block text-sm text-secondary mb-1.5" for="profile-name">Nome</label>
               <AppInput
@@ -217,7 +217,7 @@
 
           <AlertBox v-if="passwordError" class="mb-4">{{ passwordError }}</AlertBox>
 
-          <form class="space-y-4" @submit.prevent="handlePasswordSubmit">
+          <form class="space-y-4" novalidate @submit.prevent="handlePasswordSubmit">
             <div>
               <label class="block text-sm text-secondary mb-1.5" for="current-password">
                 Senha atual

@@ -45,6 +45,7 @@
   <div class="min-h-screen flex items-center justify-center bg-surface">
     <form
       class="w-full max-w-sm bg-surface-secondary rounded-card border border p-8 space-y-6"
+      novalidate
       @submit.prevent="handleLogin"
     >
       <h1 class="text-heading font-semibold text-center text-primary-text">FlowERP</h1>
