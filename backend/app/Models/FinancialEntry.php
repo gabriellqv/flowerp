@@ -4,11 +4,11 @@ namespace App\Models;
 
 use App\Enums\FinancialEntryCategory;
 use App\Enums\FinancialEntryType;
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de lançamento financeiro.
@@ -28,13 +28,7 @@ use Illuminate\Support\Str;
  */
 class FinancialEntry extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = [
@@ -50,18 +44,6 @@ class FinancialEntry extends Model
         'paid_at' => 'datetime',
         'amount' => 'decimal:2',
     ];
-
-    /**
-     * Gera UUID automaticamente ao criar um novo registro.
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (FinancialEntry $entry) {
-            if (empty($entry->id)) {
-                $entry->id = (string) Str::uuid();
-            }
-        });
-    }
 
     /**
      * Venda que originou este lançamento (quando aplicável).

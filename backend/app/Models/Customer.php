@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de cliente.
@@ -22,13 +23,7 @@ use Illuminate\Support\Str;
  */
 class Customer extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = ['name', 'email', 'phone', 'document', 'is_active'];
@@ -37,15 +32,14 @@ class Customer extends Model
     protected $casts = ['is_active' => 'boolean'];
 
     /**
-     * Gera UUID automaticamente ao criar um novo registro.
+     * Filtra apenas clientes ativos.
+     *
+     * @param  Builder<Customer>  $query
+     * @return Builder<Customer>
      */
-    protected static function booted(): void
+    public function scopeActive(Builder $query): Builder
     {
-        static::creating(function (Customer $customer) {
-            if (empty($customer->id)) {
-                $customer->id = (string) Str::uuid();
-            }
-        });
+        return $query->where('is_active', true);
     }
 
     /**

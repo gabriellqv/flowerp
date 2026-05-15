@@ -37,12 +37,12 @@ class DashboardService
         $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
 
         // Receita e vendas do mês atual
-        $currentRevenue = (float) Sale::where('created_at', '>=', $thisMonthStart)
-            ->where('status', SaleStatus::COMPLETED)
+        $currentRevenue = (float) Sale::thisMonth()
+            ->completed()
             ->sum('total_amount');
 
-        $currentSalesCount = Sale::where('created_at', '>=', $thisMonthStart)
-            ->where('status', SaleStatus::COMPLETED)
+        $currentSalesCount = Sale::thisMonth()
+            ->completed()
             ->count();
 
         // Receita e vendas do mês anterior
@@ -55,7 +55,7 @@ class DashboardService
             ->count();
 
         // Estoque separado: zerado vs baixo
-        $activeProducts = Product::where('is_active', true);
+        $activeProducts = Product::active();
         $zeroStockCount = (clone $activeProducts)
             ->where('stock_quantity', 0)
             ->count();
@@ -64,15 +64,15 @@ class DashboardService
             ->whereColumn('stock_quantity', '<=', 'min_stock')
             ->count();
 
-        // Valor total em estoque (baseado no preco de custo)
-        $totalStockValue = (float) Product::where('is_active', true)
+        // Valor total em estoque (baseado no preço de custo)
+        $totalStockValue = (float) Product::active()
             ->sum(DB::raw('stock_quantity * cost_price'));
 
         // Ticket medio do mes atual
         $averageTicket = $currentSalesCount > 0 ? $currentRevenue / $currentSalesCount : 0;
 
         return [
-            'active_products' => Product::where('is_active', true)->count(),
+            'active_products' => Product::active()->count(),
             'monthly_revenue' => $currentRevenue,
             'previous_revenue' => $previousRevenue,
             'revenue_change' => $this->calculateChange($currentRevenue, $previousRevenue),
@@ -177,7 +177,7 @@ class DashboardService
         $results = [];
 
         $salesByDay = Sale::where('created_at', '>=', $start)
-            ->where('status', SaleStatus::COMPLETED)
+            ->completed()
             ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
             ->groupBy('date')
             ->pluck('total', 'date');
@@ -205,7 +205,7 @@ class DashboardService
         $results = [];
 
         $salesByMonth = Sale::where('created_at', '>=', Carbon::now()->subMonths($months)->startOfMonth())
-            ->where('status', SaleStatus::COMPLETED)
+            ->completed()
             ->selectRaw("strftime('%Y-%m', created_at) as month, SUM(total_amount) as total")
             ->groupBy('month')
             ->pluck('total', 'month');

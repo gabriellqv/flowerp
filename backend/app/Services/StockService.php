@@ -42,18 +42,27 @@ class StockService
                         ->orWhere('sku', 'like', "%{$search}%");
                 });
             })
-            ->when($categoryId, fn ($q) => $q->where('category_id', $categoryId))
-            ->where('is_active', true)
+            ->when($categoryId, fn ($q) => $q->byCategory($categoryId))
+            ->active()
             ->orderBy($sortBy, $order)
             ->paginate($perPage);
     }
 
     /**
-     * Cria produto e registra movimentacao de estoque inicial.
+     * Cria produto e registra movimentação de estoque inicial.
      *
-     * Executado dentro de uma transacao: ou salva tudo, ou nada.
+     * Executado dentro de uma transação: ou salva tudo, ou nada.
      *
-     * @param  array  $data  Dados validados do produto
+     * @param  array{
+     *   name: string,
+     *   sku: string,
+     *   description?: string,
+     *   category_id: string,
+     *   cost_price: float,
+     *   sale_price: float,
+     *   stock_quantity: int,
+     *   min_stock?: int
+     * }  $data  Dados validados do produto
      * @return Product Produto criado com categoria carregada
      */
     public function createProduct(array $data): Product
@@ -87,7 +96,16 @@ class StockService
      * Atualiza um produto com os dados validados.
      *
      * @param  Product  $product  Produto a ser atualizado
-     * @param  array  $data  Dados validados a serem aplicados
+     * @param  array{
+     *   name?: string,
+     *   sku?: string,
+     *   description?: string,
+     *   category_id?: string,
+     *   cost_price?: float,
+     *   sale_price?: float,
+     *   stock_quantity?: int,
+     *   min_stock?: int
+     * }  $data  Dados validados a serem aplicados
      * @return Product Produto atualizado com categoria carregada
      */
     public function updateProduct(Product $product, array $data): Product
@@ -115,8 +133,7 @@ class StockService
     public function getLowStockProducts()
     {
         return Product::query()
-            ->where('is_active', true)
-            ->whereColumn('stock_quantity', '<=', 'min_stock')
+            ->lowStock()
             ->with('category')
             ->orderBy('stock_quantity', 'asc')
             ->get();

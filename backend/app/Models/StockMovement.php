@@ -4,10 +4,10 @@ namespace App\Models;
 
 use App\Enums\StockMovementReason;
 use App\Enums\StockMovementType;
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de movimentação de estoque.
@@ -23,13 +23,7 @@ use Illuminate\Support\Str;
  */
 class StockMovement extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = ['product_id', 'type', 'quantity', 'reason'];
@@ -39,18 +33,6 @@ class StockMovement extends Model
         'type' => StockMovementType::class,
         'reason' => StockMovementReason::class,
     ];
-
-    /**
-     * Gera UUID automaticamente ao criar um novo registro.
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (StockMovement $movement) {
-            if (empty($movement->id)) {
-                $movement->id = (string) Str::uuid();
-            }
-        });
-    }
 
     /**
      * Produto associado a esta movimentação.

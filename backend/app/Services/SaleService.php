@@ -25,19 +25,24 @@ use Illuminate\Support\Facades\DB;
 class SaleService
 {
     /**
-     * Executa uma venda completa com transacao ACID.
+     * Executa uma venda completa com transação ACID.
      *
-     * O que acontece dentro da transacao:
+     * O que acontece dentro da transação:
      * 1. Valida estoque de cada item (lockForUpdate previne race condition)
-     * 2. Decrementa estoque e registra movimentacoes
+     * 2. Decrementa estoque e registra movimentações
      * 3. Cria venda e itens com desconto e forma de pagamento
-     * 4. Cria entrada financeira (receita) com valor liquido
+     * 4. Cria entrada financeira (receita) com valor líquido
      * 5. Loga atividade
      *
-     * Se qualquer passo falhar, TUDO e revertido.
+     * Se qualquer passo falhar, TUDO é revertido.
      *
-     * @param  array  $saleData  Dados da venda com customer_id e items
-     * @param  User  $seller  Usuario vendedor
+     * @param  array{
+     *   customer_id?: string,
+     *   items: array<int, array{product_id: string, quantity: int}>,
+     *   discount?: float,
+     *   payment_method?: string
+     * }  $saleData  Dados da venda com customer_id e items
+     * @param  User  $seller  Usuário vendedor
      * @return Sale Venda criada com relacionamentos carregados
      *
      * @throws \InvalidArgumentException Quando estoque insuficiente ou produto inativo

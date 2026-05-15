@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de log de atividades.
@@ -23,31 +23,13 @@ use Illuminate\Support\Str;
  */
 class ActivityLog extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = ['user_id', 'action', 'entity', 'entity_id', 'details'];
 
     /** @var array<string, string> Conversões automáticas de tipo. */
     protected $casts = ['details' => 'array'];
-
-    /**
-     * Gera UUID automaticamente ao criar um novo registro.
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (ActivityLog $log) {
-            if (empty($log->id)) {
-                $log->id = (string) Str::uuid();
-            }
-        });
-    }
 
     /**
      * Usuário que realizou a ação registrada.
