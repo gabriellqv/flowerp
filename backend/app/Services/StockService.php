@@ -88,6 +88,8 @@ class StockService
                 ]);
             }
 
+            app(DashboardService::class)->clearCache();
+
             return $product->load('category');
         });
     }
@@ -112,6 +114,8 @@ class StockService
     {
         $product->update($data);
 
+        app(DashboardService::class)->clearCache();
+
         return $product->load('category');
     }
 
@@ -123,6 +127,7 @@ class StockService
     public function deactivateProduct(Product $product): void
     {
         $product->update(['is_active' => false]);
+        app(DashboardService::class)->clearCache();
     }
 
     /**
@@ -149,6 +154,8 @@ class StockService
     {
         $product->update(['is_active' => ! $product->is_active]);
 
+        app(DashboardService::class)->clearCache();
+
         return $product->load('category');
     }
 
@@ -160,5 +167,6 @@ class StockService
     public function bulkDeactivateProducts(array $ids): void
     {
         Product::whereIn('id', $ids)->update(['is_active' => false]);
+        app(DashboardService::class)->clearCache();
     }
 }

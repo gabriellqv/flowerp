@@ -66,6 +66,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Vendas
     Route::prefix('sales')->controller(SaleController::class)->group(function () {
+        Route::get('export', 'export')->middleware('role:admin,manager');
         Route::get('', 'index');
         Route::post('', 'store')->middleware('role:admin,manager,seller');
         Route::get('{sale}', 'show');

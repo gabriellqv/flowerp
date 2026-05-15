@@ -10,6 +10,7 @@ use App\Services\SaleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller de execucao e consulta de vendas.
@@ -72,5 +73,44 @@ class SaleController extends Controller
     public function show(Sale $sale): SaleResource
     {
         return new SaleResource($sale->load(['items.product', 'seller', 'customer']));
+    }
+
+    /**
+     * Exporta todas as vendas para formato CSV.
+     *
+     * Utiliza streamDownload para gerar o arquivo em memória,
+     * sem gravar fisicamente no disco.
+     *
+     * @return StreamedResponse
+     */
+    public function export()
+    {
+        return response()->streamDownload(function () {
+            $handle = fopen('php://output', 'w');
+
+            // BOM para Excel ler acentos
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            // Cabeçalho
+            fputcsv($handle, ['ID', 'Data', 'Vendedor', 'Cliente', 'Status', 'Total', 'Desconto'], ';');
+
+            $sales = Sale::with(['seller', 'customer'])->latest()->get();
+
+            foreach ($sales as $sale) {
+                fputcsv($handle, [
+                    $sale->id,
+                    $sale->created_at->format('d/m/Y H:i'),
+                    $sale->seller?->name ?? 'N/A',
+                    $sale->customer?->name ?? 'Avulso',
+                    $sale->status->value,
+                    number_format($sale->total_amount, 2, ',', '.'),
+                    number_format($sale->discount, 2, ',', '.'),
+                ], ';');
+            }
+
+            fclose($handle);
+        }, 'vendas_export_'.now()->format('Ymd_His').'.csv', [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+        ]);
     }
 }
