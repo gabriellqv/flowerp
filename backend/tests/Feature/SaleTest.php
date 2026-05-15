@@ -265,9 +265,11 @@ test('listagem de vendas retorna dados paginados', function () {
         ->assertOk()
         ->assertJsonStructure([
             'data',
-            'current_page',
-            'last_page',
-            'total',
+            'meta' => [
+                'current_page',
+                'last_page',
+                'total',
+            ],
         ]);
 });
 
