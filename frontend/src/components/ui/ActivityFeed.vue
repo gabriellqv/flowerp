@@ -120,7 +120,7 @@
           </p>
           <p
             v-if="getCustomerName(activity)"
-            class="text-small text-[var(--color-text-primary)] truncate mt-0.5"
+            class="text-small text-[var(--color-text-primary)] mt-0.5"
           >
             Cliente:
             <span class="text-primary-text">{{ getCustomerName(activity) }}</span>

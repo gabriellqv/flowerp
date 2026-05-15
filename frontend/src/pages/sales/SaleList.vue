@@ -61,7 +61,7 @@
         signal: controller.signal,
       });
       sales.value = data.data;
-      total.value = data.total;
+      total.value = data.meta?.total || 0;
     } catch (e: unknown) {
       const err = e as { code?: string };
       if (err.code === 'ERR_CANCELED') return;

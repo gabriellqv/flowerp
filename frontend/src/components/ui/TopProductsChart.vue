@@ -23,17 +23,22 @@
   const barRef = ref<ChartComponentRef<'bar'> | null>(null);
 
   onMounted(async () => {
-    const { data } = await api.get<IChartDataPoint[]>('/dashboard/top-products');
-    chartData.value = data;
-    loading.value = false;
+    try {
+      const { data } = await api.get<IChartDataPoint[]>('/dashboard/top-products');
+      chartData.value = data || [];
+    } catch (e) {
+      console.error('Erro ao carregar top products:', e);
+      chartData.value = [];
+    } finally {
+      loading.value = false;
+      chartReady.value = true;
+      await nextTick();
 
-    chartReady.value = true;
-    await nextTick();
-
-    const chart = barRef.value?.chart;
-    if (chart && data.length > 0) {
-      chart.data.datasets[0].data = data.map((d) => d.value);
-      chart.update('active');
+      const chart = barRef.value?.chart;
+      if (chart && chartData.value.length > 0) {
+        chart.data.datasets[0].data = chartData.value.map((d) => d.value);
+        chart.update('active');
+      }
     }
   });
 </script>
@@ -120,7 +125,18 @@
               beginAtZero: true,
               grid: { color: 'rgba(0,0,0,0.05)' },
             },
-            y: { grid: { display: false } },
+            y: {
+              grid: { display: false },
+              ticks: {
+                callback: function (value) {
+                  const label = this.getLabelForValue(value as number);
+                  if (typeof label === 'string' && label.length > 16) {
+                    return label.substring(0, 16) + '...';
+                  }
+                  return label;
+                },
+              },
+            },
           },
         }"
       />

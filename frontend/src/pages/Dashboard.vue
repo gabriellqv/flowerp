@@ -41,9 +41,14 @@
   });
 
   onMounted(async () => {
-    const { data } = await api.get<DashboardSummary>('/dashboard/summary');
-    summary.value = data;
-    loading.value = false;
+    try {
+      const { data } = await api.get<DashboardSummary>('/dashboard/summary');
+      summary.value = data;
+    } catch (e) {
+      console.error('Erro ao carregar summary:', e);
+    } finally {
+      loading.value = false;
+    }
   });
 </script>
 
@@ -62,7 +67,7 @@
           :change="summary.revenue_change"
         >
           <template #icon>
-            <DollarSign class="w-6 h-6 text-primary-text" />
+            <DollarSign class="w-4 h-4 md:w-5 md:h-5 text-primary-text" />
           </template>
         </DashboardCard>
 
@@ -72,37 +77,37 @@
           :change="summary.sales_change"
         >
           <template #icon>
-            <ShoppingCart class="w-6 h-6 text-info" />
+            <ShoppingCart class="w-4 h-4 md:w-5 md:h-5 text-info" />
           </template>
         </DashboardCard>
 
         <DashboardCard label="Ticket Médio" :value="formatCurrency(summary.average_ticket)">
           <template #icon>
-            <TrendingUp class="w-6 h-6 text-primary-text" />
+            <TrendingUp class="w-4 h-4 md:w-5 md:h-5 text-primary-text" />
           </template>
         </DashboardCard>
 
         <DashboardCard label="Estoque Zerado" :value="String(summary.zero_stock_count)">
           <template #icon>
-            <XCircle class="w-6 h-6 text-error" />
+            <XCircle class="w-4 h-4 md:w-5 md:h-5 text-error" />
           </template>
         </DashboardCard>
 
         <DashboardCard label="Estoque Baixo" :value="String(summary.low_stock_count)">
           <template #icon>
-            <AlertTriangle class="w-6 h-6 text-warning" />
+            <AlertTriangle class="w-4 h-4 md:w-5 md:h-5 text-warning" />
           </template>
         </DashboardCard>
 
         <DashboardCard label="Produtos Ativos" :value="String(summary.active_products)">
           <template #icon>
-            <Package class="w-6 h-6 text-primary-text" />
+            <Package class="w-4 h-4 md:w-5 md:h-5 text-primary-text" />
           </template>
         </DashboardCard>
 
         <DashboardCard label="Valor em Estoque" :value="formatCurrency(summary.total_stock_value)">
           <template #icon>
-            <Database class="w-6 h-6 text-primary-text" />
+            <Database class="w-4 h-4 md:w-5 md:h-5 text-primary-text" />
           </template>
         </DashboardCard>
       </div>

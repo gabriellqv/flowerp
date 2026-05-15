@@ -77,7 +77,8 @@
         response?: { data?: { message?: string; errors?: Record<string, string[]> } };
       };
       profileError.value =
-        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
+        (err.response?.data?.errors &&
+          Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
         'Erro ao atualizar perfil.';
     } finally {
@@ -105,7 +106,8 @@
         response?: { data?: { message?: string; errors?: Record<string, string[]> } };
       };
       passwordError.value =
-        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
+        (err.response?.data?.errors &&
+          Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
         'Erro ao alterar senha.';
     } finally {

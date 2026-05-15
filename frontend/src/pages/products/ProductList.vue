@@ -110,7 +110,7 @@
         signal: controller.signal,
       });
       products.value = data.data;
-      total.value = data.total;
+      total.value = data.meta?.total || 0;
       selected.value = [];
     } catch (e: unknown) {
       const err = e as { code?: string };
