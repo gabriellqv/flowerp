@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\StockMovementReason;
+use App\Enums\StockMovementType;
 use App\Models\Product;
 use App\Models\StockMovement;
 use Illuminate\Database\Eloquent\Collection;
@@ -71,9 +73,9 @@ class StockService
             if ($data['stock_quantity'] > 0) {
                 StockMovement::create([
                     'product_id' => $product->id,
-                    'type' => 'IN',
+                    'type' => StockMovementType::IN,
                     'quantity' => $data['stock_quantity'],
-                    'reason' => 'INITIAL_STOCK',
+                    'reason' => StockMovementReason::INITIAL_STOCK,
                 ]);
             }
 

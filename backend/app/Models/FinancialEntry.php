@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\FinancialEntryCategory;
+use App\Enums\FinancialEntryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,10 +18,10 @@ use Illuminate\Support\Str;
  * O campo `is_paid` controla o fluxo de caixa (previsto vs. realizado).
  *
  * @property string $id UUID gerado automaticamente
- * @property string $type Tipo: INCOME (receita) ou EXPENSE (despesa)
+ * @property FinancialEntryType $type Tipo do lançamento financeiro
  * @property string $amount Valor do lançamento (decimal 12,2)
  * @property string $description Descrição do lançamento (máx. 500 caracteres)
- * @property string|null $category Classificação: SALE, PURCHASE, OTHER
+ * @property FinancialEntryCategory|null $category Categoria do lançamento
  * @property string|null $sale_id FK -> venda associada (opcional)
  * @property bool $is_paid Indica se o lançamento foi efetivado
  * @property Carbon|null $paid_at Data/hora do pagamento
@@ -42,6 +44,8 @@ class FinancialEntry extends Model
 
     /** @var array<string, string> Conversões automáticas de tipo. */
     protected $casts = [
+        'type' => FinancialEntryType::class,
+        'category' => FinancialEntryCategory::class,
         'is_paid' => 'boolean',
         'paid_at' => 'datetime',
         'amount' => 'decimal:2',

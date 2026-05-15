@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\StockMovementReason;
+use App\Enums\StockMovementType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,9 +17,9 @@ use Illuminate\Support\Str;
  *
  * @property string $id UUID gerado automaticamente
  * @property string $product_id FK -> produto movimentado
- * @property string $type Direção: IN (entrada) ou OUT (saída)
+ * @property StockMovementType $type Direção: IN (entrada) ou OUT (saída)
  * @property int $quantity Quantidade movimentada
- * @property string $reason Motivo: INITIAL_STOCK, SALE, PURCHASE, ADJUSTMENT
+ * @property StockMovementReason $reason Motivo da movimentação
  */
 class StockMovement extends Model
 {
@@ -31,6 +33,12 @@ class StockMovement extends Model
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = ['product_id', 'type', 'quantity', 'reason'];
+
+    /** @var array<string, string> Conversões automáticas de tipo. */
+    protected $casts = [
+        'type' => StockMovementType::class,
+        'reason' => StockMovementReason::class,
+    ];
 
     /**
      * Gera UUID automaticamente ao criar um novo registro.
