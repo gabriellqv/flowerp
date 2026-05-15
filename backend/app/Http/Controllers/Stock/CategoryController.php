@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Stock;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Controller de categorias de produtos.
@@ -19,9 +21,9 @@ class CategoryController extends Controller
     /**
      * Lista todas as categorias em ordem alfabetica.
      */
-    public function index(): JsonResponse
+    public function index(): AnonymousResourceCollection
     {
-        return response()->json(Category::orderBy('name')->get());
+        return CategoryResource::collection(Category::orderBy('name')->get());
     }
 
     /**
@@ -29,9 +31,9 @@ class CategoryController extends Controller
      *
      * @param  Category  $category  Categoria solicitada
      */
-    public function show(Category $category): JsonResponse
+    public function show(Category $category): CategoryResource
     {
-        return response()->json($category);
+        return new CategoryResource($category);
     }
 
     /**
@@ -44,7 +46,7 @@ class CategoryController extends Controller
     {
         $category = Category::create($request->validated());
 
-        return response()->json($category, 201);
+        return response()->json(new CategoryResource($category), 201);
     }
 
     /**
@@ -54,11 +56,11 @@ class CategoryController extends Controller
      * @param  Category  $category  Categoria a ser atualizada
      * @return JsonResponse Categoria atualizada
      */
-    public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
+    public function update(UpdateCategoryRequest $request, Category $category): CategoryResource
     {
         $category->update($request->validated());
 
-        return response()->json($category);
+        return new CategoryResource($category);
     }
 
     /**
