@@ -95,7 +95,7 @@
 
       <!-- Logo (favicon) -->
       <RouterLink to="/" class="mb-6 relative z-10" title="FlowERP">
-        <img src="/favicon.svg" alt="FlowERP" class="w-8 h-8" />
+        <img src="/favicon.png" alt="FlowERP" class="w-6 h-6" />
       </RouterLink>
 
       <!-- Navegação -->

@@ -48,7 +48,10 @@
       novalidate
       @submit.prevent="handleLogin"
     >
-      <h1 class="text-heading font-semibold text-center text-primary-text">FlowERP</h1>
+      <div class="flex flex-col items-center gap-3">
+        <img src="/favicon.png" alt="FlowERP Logo" class="w-16 h-16" />
+        <h1 class="text-heading font-semibold text-center text-primary-text">FlowERP</h1>
+      </div>
 
       <AlertBox v-if="error">{{ error }}</AlertBox>
 
