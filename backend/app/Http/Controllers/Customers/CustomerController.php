@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Customers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Http\Resources\CustomerResource;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Controller de gerenciamento de clientes.
@@ -22,7 +24,7 @@ class CustomerController extends Controller
      *
      * @param  Request  $request  Query params: search, page
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $customers = Customer::query()
             ->when($request->search, fn ($q) => $q->where('name', 'like', "%{$request->search}%")
@@ -32,7 +34,7 @@ class CustomerController extends Controller
             ->latest()
             ->paginate(20);
 
-        return response()->json($customers);
+        return CustomerResource::collection($customers);
     }
 
     /**
@@ -45,7 +47,7 @@ class CustomerController extends Controller
     {
         $customer = Customer::create($request->validated());
 
-        return response()->json($customer, 201);
+        return response()->json(new CustomerResource($customer), 201);
     }
 
     /**
@@ -53,9 +55,9 @@ class CustomerController extends Controller
      *
      * @param  Customer  $customer  Cliente resolvido via Route Model Binding
      */
-    public function show(Customer $customer): JsonResponse
+    public function show(Customer $customer): CustomerResource
     {
-        return response()->json($customer);
+        return new CustomerResource($customer);
     }
 
     /**
@@ -64,11 +66,11 @@ class CustomerController extends Controller
      * @param  UpdateCustomerRequest  $request  Dados validados a atualizar
      * @param  Customer  $customer  Cliente resolvido via Route Model Binding
      */
-    public function update(UpdateCustomerRequest $request, Customer $customer): JsonResponse
+    public function update(UpdateCustomerRequest $request, Customer $customer): CustomerResource
     {
         $customer->update($request->validated());
 
-        return response()->json($customer);
+        return new CustomerResource($customer);
     }
 
     /**
@@ -77,11 +79,11 @@ class CustomerController extends Controller
      * @param  Customer  $customer  Cliente a ser alternado
      * @return JsonResponse Cliente com novo estado
      */
-    public function toggleActive(Customer $customer): JsonResponse
+    public function toggleActive(Customer $customer): CustomerResource
     {
         $customer->update(['is_active' => ! $customer->is_active]);
 
-        return response()->json($customer);
+        return new CustomerResource($customer);
     }
 
     /**

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Sales;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSaleRequest;
+use App\Http\Resources\SaleResource;
 use App\Models\Sale;
 use App\Services\SaleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Controller de execucao e consulta de vendas.
@@ -29,7 +31,7 @@ class SaleController extends Controller
      *
      * @param  Request  $request  Query params: search, page
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $sales = Sale::with(['seller:id,name', 'customer:id,name'])
             ->when($request->search, function ($q) use ($request) {
@@ -39,7 +41,7 @@ class SaleController extends Controller
             ->latest()
             ->paginate(20);
 
-        return response()->json($sales);
+        return SaleResource::collection($sales);
     }
 
     /**
@@ -56,7 +58,7 @@ class SaleController extends Controller
                 $request->user(),
             );
 
-            return response()->json($sale, 201);
+            return response()->json(new SaleResource($sale), 201);
         } catch (\InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
@@ -67,8 +69,8 @@ class SaleController extends Controller
      *
      * @param  Sale  $sale  Venda resolvida via Route Model Binding
      */
-    public function show(Sale $sale): JsonResponse
+    public function show(Sale $sale): SaleResource
     {
-        return response()->json($sale->load(['items.product', 'seller', 'customer']));
+        return new SaleResource($sale->load(['items.product', 'seller', 'customer']));
     }
 }

@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Stock;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\StockService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
  * Controller de gerenciamento de produtos.
@@ -30,7 +32,7 @@ class ProductController extends Controller
      *
      * @param  Request  $request  Query params: search, category_id, sort_by, order, per_page
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): AnonymousResourceCollection
     {
         $products = $this->stockService->listProducts(
             search: $request->query('search'),
@@ -40,7 +42,7 @@ class ProductController extends Controller
             perPage: (int) $request->query('per_page', 20),
         );
 
-        return response()->json($products);
+        return ProductResource::collection($products);
     }
 
     /**
@@ -53,7 +55,7 @@ class ProductController extends Controller
     {
         $product = $this->stockService->createProduct($request->validated());
 
-        return response()->json($product, 201);
+        return response()->json(new ProductResource($product), 201);
     }
 
     /**
@@ -61,9 +63,9 @@ class ProductController extends Controller
      *
      * @param  Product  $product  Produto resolvido via Route Model Binding
      */
-    public function show(Product $product): JsonResponse
+    public function show(Product $product): ProductResource
     {
-        return response()->json($product->load('category'));
+        return new ProductResource($product->load('category'));
     }
 
     /**
@@ -72,11 +74,11 @@ class ProductController extends Controller
      * @param  UpdateProductRequest  $request  Dados validados (parcial)
      * @param  Product  $product  Produto a ser atualizado
      */
-    public function update(UpdateProductRequest $request, Product $product): JsonResponse
+    public function update(UpdateProductRequest $request, Product $product): ProductResource
     {
         $product = $this->stockService->updateProduct($product, $request->validated());
 
-        return response()->json($product);
+        return new ProductResource($product);
     }
 
     /**
@@ -95,9 +97,9 @@ class ProductController extends Controller
     /**
      * Lista produtos com estoque abaixo do minimo configurado.
      */
-    public function lowStock(): JsonResponse
+    public function lowStock(): AnonymousResourceCollection
     {
-        return response()->json($this->stockService->getLowStockProducts());
+        return ProductResource::collection($this->stockService->getLowStockProducts());
     }
 
     /**
@@ -106,11 +108,11 @@ class ProductController extends Controller
      * @param  Product  $product  Produto a ser alternado
      * @return JsonResponse Produto com novo estado
      */
-    public function toggleActive(Product $product): JsonResponse
+    public function toggleActive(Product $product): ProductResource
     {
         $product = $this->stockService->toggleProductActive($product);
 
-        return response()->json($product);
+        return new ProductResource($product);
     }
 
     /**
