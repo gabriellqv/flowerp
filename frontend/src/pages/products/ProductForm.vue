@@ -50,7 +50,7 @@
   });
 
   const submitting = ref(false);
-  const error = ref('');
+  const errorsList = ref<string[]>([]);
 
   async function loadProduct() {
     const { data } = await api.get<Product>(`/products/${route.params.id}`);
@@ -77,7 +77,7 @@
 
   async function handleSubmit() {
     submitting.value = true;
-    error.value = '';
+    errorsList.value = [];
 
     const payload = {
       name: form.value.name,
@@ -103,10 +103,12 @@
       const err = e as {
         response?: { data?: { message?: string; errors?: Record<string, string[]> } };
       };
-      error.value =
-        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
-        err.response?.data?.message ||
-        'Erro ao salvar produto.';
+
+      if (err.response?.data?.errors) {
+        errorsList.value = Object.values(err.response.data.errors).flat();
+      } else {
+        errorsList.value = [err.response?.data?.message || 'Erro ao salvar produto.'];
+      }
     } finally {
       submitting.value = false;
     }
@@ -128,7 +130,11 @@
       </template>
     </PageHeader>
 
-    <AlertBox v-if="error" class="mb-4">{{ error }}</AlertBox>
+    <AlertBox v-if="errorsList.length > 0" class="mb-4">
+      <ul class="list-disc pl-4 space-y-1">
+        <li v-for="(err, idx) in errorsList" :key="idx">{{ err }}</li>
+      </ul>
+    </AlertBox>
 
     <form
       class="max-w-2xl bg-[var(--color-glass-bg)] backdrop-blur-xl border border-[var(--color-glass-border)] rounded-card p-card shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] space-y-5"

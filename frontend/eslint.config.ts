@@ -42,6 +42,8 @@ export default tseslint.config(
         KeyboardEvent: 'readonly',
         Event: 'readonly',
         document: 'readonly',
+        window: 'readonly',
+        console: 'readonly',
       },
     },
   },

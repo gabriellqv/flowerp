@@ -71,25 +71,29 @@
 
     <div class="flex items-center gap-2 w-full">
       <div
-        class="w-8 h-8 rounded-full bg-surface-secondary flex items-center justify-center shrink-0 shadow-sm"
+        class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-surface-secondary flex items-center justify-center shrink-0 shadow-sm"
       >
         <slot name="icon" />
       </div>
-      <span class="text-sm font-medium text-[var(--color-text-secondary)] truncate flex-1">
+      <span
+        class="text-xs md:text-sm font-medium text-[var(--color-text-secondary)] truncate flex-1"
+      >
         {{ label }}
       </span>
     </div>
 
-    <div class="mt-1 w-full flex items-baseline justify-between">
+    <div
+      class="mt-1 w-full flex flex-col md:flex-row md:items-baseline md:justify-between gap-0.5 md:gap-2"
+    >
       <p
-        class="text-lg font-semibold font-mono text-[var(--color-text-primary)] truncate"
+        class="text-base md:text-lg font-semibold font-mono text-[var(--color-text-primary)]"
         :title="String(value)"
       >
         {{ displayValue }}
       </p>
       <span
         v-if="change !== undefined && change !== null"
-        class="text-small font-medium font-mono"
+        class="text-[11px] md:text-xs font-medium font-mono"
         :class="change >= 0 ? 'text-primary-text' : 'text-error'"
       >
         {{ displayChange }}

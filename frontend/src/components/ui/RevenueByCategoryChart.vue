@@ -24,17 +24,22 @@
   const doughnutRef = ref<ChartComponentRef<'doughnut'> | null>(null);
 
   onMounted(async () => {
-    const { data } = await api.get<IChartDataPoint[]>('/dashboard/revenue-by-category');
-    chartData.value = data;
-    loading.value = false;
+    try {
+      const { data } = await api.get<IChartDataPoint[]>('/dashboard/revenue-by-category');
+      chartData.value = data || [];
+    } catch (e) {
+      console.error('Erro ao carregar categorias:', e);
+      chartData.value = [];
+    } finally {
+      loading.value = false;
+      chartReady.value = true;
+      await nextTick();
 
-    chartReady.value = true;
-    await nextTick();
-
-    const chart = doughnutRef.value?.chart;
-    if (chart && data.length > 0) {
-      chart.data.datasets[0].data = data.map((d) => d.value);
-      chart.update('active');
+      const chart = doughnutRef.value?.chart;
+      if (chart && chartData.value.length > 0) {
+        chart.data.datasets[0].data = chartData.value.map((d) => d.value);
+        chart.update('active');
+      }
     }
   });
 

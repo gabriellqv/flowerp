@@ -233,7 +233,7 @@ class DashboardService
      *
      * @return Collection<int, mixed>
      */
-    public function getTopProducts(): Collection
+    public function getTopProducts(): array
     {
         return Cache::remember('dashboard.top_products', now()->addHour(), function () {
             $thisMonthStart = Carbon::now()->startOfMonth();
@@ -247,7 +247,9 @@ class DashboardService
                 ->groupBy('products.id', 'products.name')
                 ->orderByDesc('value')
                 ->limit(5)
-                ->get();
+                ->get()
+                ->map(fn ($item) => (array) $item)
+                ->toArray();
         });
     }
 
@@ -256,7 +258,7 @@ class DashboardService
      *
      * @return Collection<int, mixed>
      */
-    public function getRevenueByCategory(): Collection
+    public function getRevenueByCategory(): array
     {
         return Cache::remember('dashboard.revenue_by_category', now()->addHour(), function () {
             $thisMonthStart = Carbon::now()->startOfMonth();
@@ -270,7 +272,9 @@ class DashboardService
                 ->select('categories.name as label', DB::raw('SUM(sale_items.quantity * sale_items.unit_price) as value'))
                 ->groupBy('categories.id', 'categories.name')
                 ->orderByDesc('value')
-                ->get();
+                ->get()
+                ->map(fn ($item) => (array) $item)
+                ->toArray();
         });
     }
 

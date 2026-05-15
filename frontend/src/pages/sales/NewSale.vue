@@ -147,9 +147,12 @@
       showToast(`Venda de ${formatCurrency(cartTotal.value)} finalizada!`);
       router.push('/sales');
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { message?: string; errors?: Record<string, string[]> } } };
+      const err = e as {
+        response?: { data?: { message?: string; errors?: Record<string, string[]> } };
+      };
       error.value =
-        (err.response?.data?.errors && Object.values(err.response.data.errors).flat().join(' • ')) ||
+        (err.response?.data?.errors &&
+          Object.values(err.response.data.errors).flat().join(' • ')) ||
         err.response?.data?.message ||
         'Erro ao finalizar venda.';
     } finally {
@@ -217,11 +220,13 @@
     <AppSelect v-model="selectedCategory" :options="categoryOptions" class="mb-4" />
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
+      <div
+        class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 max-h-[55vh] lg:max-h-none overflow-y-auto lg:overflow-visible pr-1 sm:pr-0"
+      >
         <button
           v-for="product in filteredProducts"
           :key="product.id"
-          class="text-left bg-surface-secondary border border rounded-input p-4 hover:border-primary-hover/50 transition-colors cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed"
+          class="text-left bg-surface-secondary border border-border rounded-input p-4 hover:border-primary-hover/50 transition-colors cursor-pointer disabled:opacity-disabled-button disabled:cursor-not-allowed"
           :disabled="product.stock_quantity === 0"
           @click="addToCart(product)"
         >
@@ -236,7 +241,9 @@
         </button>
       </div>
 
-      <div class="bg-surface-secondary border border rounded-card p-card space-y-4 flex flex-col">
+      <div
+        class="bg-surface-secondary border border-border rounded-card p-card space-y-4 flex flex-col lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)]"
+      >
         <h2 class="font-semibold">Carrinho</h2>
 
         <div
@@ -299,7 +306,7 @@
           </div>
         </div>
 
-        <div v-if="cart.length > 0" class="border-t border pt-4 space-y-3">
+        <div v-if="cart.length > 0" class="border-t border-border pt-4 space-y-3">
           <div class="flex justify-between text-sm text-secondary">
             <span>Subtotal</span>
             <span class="font-mono">{{ formatCurrency(cartSubtotal) }}</span>

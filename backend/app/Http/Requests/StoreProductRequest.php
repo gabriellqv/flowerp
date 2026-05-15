@@ -48,9 +48,28 @@ class StoreProductRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'sku.unique' => 'Este SKU ja esta cadastrado.',
-            'sale_price.gt' => 'Preco de venda deve ser maior que o preco de custo.',
-            'category_id.exists' => 'Categoria nao encontrada.',
+            'sku.unique' => 'Este SKU já está cadastrado.',
+            'sale_price.gt' => 'O preço de venda deve ser maior que o preço de custo.',
+            'category_id.exists' => 'Categoria não encontrada.',
+        ];
+    }
+
+    /**
+     * Traducao dos nomes dos atributos para as mensagens padrão.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nome do produto',
+            'sku' => 'SKU',
+            'description' => 'descrição',
+            'category_id' => 'categoria',
+            'cost_price' => 'preço de custo',
+            'sale_price' => 'preço de venda',
+            'stock_quantity' => 'quantidade em estoque',
+            'min_stock' => 'estoque mínimo',
         ];
     }
 }

@@ -10,7 +10,7 @@
    */
   import { useAuthStore } from '@/stores/auth';
   import { useRouter } from 'vue-router';
-  import { ref, computed, type Component } from 'vue';
+  import { ref, computed, onMounted, onUnmounted, type Component } from 'vue';
   import {
     LayoutDashboard,
     Package,
@@ -22,6 +22,8 @@
     ArrowUp,
     Tag,
     ClipboardList,
+    Menu,
+    X,
   } from 'lucide-vue-next';
   import { isDark, toggleTheme } from '@/composables/useTheme';
 
@@ -30,6 +32,21 @@
 
   const mainRef = ref<HTMLElement | null>(null);
   const showScrollTop = ref(false);
+  const mobileMenuOpen = ref(false);
+
+  function handleResize() {
+    if (window.innerWidth >= 768 && mobileMenuOpen.value) {
+      mobileMenuOpen.value = false;
+    }
+  }
+
+  onMounted(() => {
+    window.addEventListener('resize', handleResize);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener('resize', handleResize);
+  });
 
   function onScroll() {
     if (mainRef.value) {
@@ -71,7 +88,7 @@
 </script>
 
 <template>
-  <div class="h-screen bg-surface flex overflow-hidden relative">
+  <div class="h-screen bg-surface flex flex-col md:flex-row overflow-hidden relative">
     <!-- Mesh Gradient: fundo esmeralda esfumaçado apenas no modo Escuro -->
     <div v-show="isDark" class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
       <div
@@ -86,62 +103,97 @@
     </div>
 
     <aside
-      class="w-16 bg-[var(--color-glass-bg)] backdrop-blur-xl shadow-[4px_0_24px_-8px_rgba(0,0,0,0.1)] flex flex-col items-center py-4 shrink-0 relative z-10"
+      class="bg-[var(--color-glass-bg)] backdrop-blur-xl shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] md:shadow-[4px_0_24px_-8px_rgba(0,0,0,0.1)] flex md:flex-col items-center py-2 md:py-4 px-4 md:px-0 shrink-0 relative z-50 w-full h-[72px] md:w-16 md:h-full justify-between md:justify-start"
     >
-      <!-- Reflexo suave de luz na borda direita para reforçar o vidro -->
+      <!-- Reflexo suave de luz na borda -->
       <div
-        class="absolute top-0 bottom-0 right-0 w-px bg-gradient-to-b from-transparent via-[var(--color-glass-shine)] to-transparent"
+        class="hidden md:block absolute top-0 bottom-0 right-0 w-px bg-gradient-to-b from-transparent via-[var(--color-glass-shine)] to-transparent"
+      ></div>
+      <div
+        class="md:hidden absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--color-glass-shine)] to-transparent"
       ></div>
 
-      <!-- Logo (favicon) -->
-      <RouterLink to="/" class="mb-6 relative z-10" title="FlowERP">
-        <img src="/favicon.png" alt="FlowERP" class="w-6 h-6" />
-      </RouterLink>
+      <!-- Header Esquerda (Mobile: Hamburger + Logo, Desktop: Logo) -->
+      <div class="flex items-center gap-3 md:mb-6 shrink-0">
+        <button
+          class="md:hidden text-primary-text cursor-pointer hover:bg-surface-elevated p-1.5 rounded-input transition-colors"
+          @click="mobileMenuOpen = !mobileMenuOpen"
+        >
+          <Menu v-if="!mobileMenuOpen" :size="24" />
+          <X v-else :size="24" />
+        </button>
 
-      <!-- Navegação -->
-      <nav class="flex-1 flex flex-col items-center gap-1">
+        <RouterLink
+          to="/"
+          class="relative z-10 flex items-center"
+          title="FlowERP"
+          @click="mobileMenuOpen = false"
+        >
+          <img src="/favicon.png" alt="FlowERP" class="w-6 h-6" />
+        </RouterLink>
+      </div>
+
+      <!-- Navegação principal (Dropdown no Mobile) -->
+      <nav
+        :class="[
+          'md:flex md:flex-col md:static md:w-auto md:bg-transparent md:border-none md:p-0 md:shadow-none md:h-auto items-center gap-1.5 md:gap-1',
+          'absolute top-[72px] left-0 w-full h-[calc(100vh-72px)] bg-surface p-4 flex-col z-40',
+          mobileMenuOpen ? 'flex' : 'hidden',
+        ]"
+      >
         <RouterLink
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors"
+          class="shrink-0 w-full md:w-10 h-14 md:h-10 flex items-center justify-start md:justify-center px-4 md:px-0 rounded-input hover:bg-surface-elevated transition-colors gap-4 md:gap-0"
           exact-active-class="bg-surface-elevated text-primary-text"
           :title="item.label"
+          @click="mobileMenuOpen = false"
         >
-          <component :is="item.icon" :size="20" />
+          <component :is="item.icon" :size="22" class="md:w-5 md:h-5" />
+          <span class="md:hidden font-medium text-base">{{ item.label }}</span>
         </RouterLink>
       </nav>
 
       <!-- Ações do rodapé -->
-      <div class="flex flex-col items-center gap-2">
+      <div
+        class="flex md:flex-col items-center gap-2 ml-auto md:ml-0 md:mt-auto md:border-t border-border/50 md:pt-4 shrink-0"
+      >
         <RouterLink
           to="/profile"
-          class="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary-text hover:bg-primary/25 transition-colors"
+          class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-primary/15 flex items-center justify-center text-xs font-bold text-primary-text hover:bg-primary/25 transition-colors shrink-0"
           title="Meu Perfil"
         >
           {{ auth.user?.name?.charAt(0)?.toUpperCase() ?? '?' }}
         </RouterLink>
 
         <button
-          class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors cursor-pointer"
+          class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-input hover:bg-surface-elevated transition-colors cursor-pointer shrink-0"
           :title="isDark ? 'Tema claro' : 'Tema escuro'"
           @click="toggleTheme()"
         >
-          <Sun v-if="isDark" :size="20" class="text-secondary" />
-          <Moon v-else :size="20" class="text-secondary" />
+          <Sun v-if="isDark" :size="18" class="text-secondary md:w-5 md:h-5" />
+          <Moon v-else :size="18" class="text-secondary md:w-5 md:h-5" />
         </button>
 
         <button
-          class="w-10 h-10 flex items-center justify-center rounded-input hover:bg-error-bg text-error transition-colors cursor-pointer"
+          class="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center rounded-input hover:bg-error-bg text-error transition-colors cursor-pointer shrink-0"
           title="Sair"
           @click="handleLogout"
         >
-          <LogOut :size="20" />
+          <LogOut :size="18" class="md:w-5 md:h-5" />
         </button>
       </div>
     </aside>
 
-    <main ref="mainRef" class="flex-1 overflow-y-auto relative z-10 pb-20" @scroll="onScroll">
+    <main
+      ref="mainRef"
+      :class="[
+        'flex-1 relative z-10 pb-6 md:pb-20',
+        mobileMenuOpen ? 'overflow-hidden' : 'overflow-y-auto',
+      ]"
+      @scroll="onScroll"
+    >
       <RouterView />
     </main>
 
@@ -155,7 +207,7 @@
       leave-to-class="opacity-0 translate-y-8"
     >
       <button
-        v-show="showScrollTop"
+        v-show="showScrollTop && !mobileMenuOpen"
         class="fixed bottom-6 right-6 w-10 h-10 flex items-center justify-center rounded-full bg-[var(--color-glass-bg)] backdrop-blur-md border border-zinc-400 dark:border-[var(--color-glass-border)] text-primary hover:border-primary dark:hover:border-primary shadow-[0_4px_14px_rgba(0,0,0,0.25)] dark:shadow-[0_4px_14px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all z-50 group cursor-pointer"
         title="Voltar ao topo"
         @click="scrollToTop"
