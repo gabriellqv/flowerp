@@ -46,6 +46,10 @@ export interface Product {
 
 export interface PaginatedResponse<T> {
   data: T[];
+  total: number;
+  page?: number;
+  per_page?: number;
+  last_page?: number;
   meta?: {
     current_page: number;
     last_page: number;
