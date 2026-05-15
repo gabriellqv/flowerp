@@ -185,7 +185,7 @@ test('getTopProducts retorna os produtos mais vendidos do mes', function () {
     $topProducts = $this->dashboardService->getTopProducts();
 
     expect($topProducts)->toHaveCount(2);
-    expect($topProducts->first()->value)->toBe(10);
+    expect((int) $topProducts[0]['value'])->toBe(10);
 });
 
 test('clearCache limpa todos os caches do dashboard', function () {
