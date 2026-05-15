@@ -13,13 +13,13 @@
 use App\Enums\SaleStatus;
 use App\Models\ActivityLog;
 use App\Models\Category;
-use App\Models\Customer;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\User;
 use App\Services\DashboardService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 uses(TestCase::class, RefreshDatabase::class);
@@ -130,7 +130,7 @@ test('getPaginatedActivity filtra por acao', function () {
     ActivityLog::factory()->create(['action' => 'PRODUCT_CREATED', 'user_id' => $this->seller->id]);
     ActivityLog::factory()->create(['action' => 'SALE_CREATED', 'user_id' => $this->seller->id]);
 
-    $request = new \Illuminate\Http\Request(['action' => 'PRODUCT_CREATED']);
+    $request = new Request(['action' => 'PRODUCT_CREATED']);
     $result = $this->dashboardService->getPaginatedActivity($request);
 
     expect($result->total())->toBe(1);
@@ -141,7 +141,7 @@ test('getPaginatedActivity busca por nome do usuario', function () {
     ActivityLog::factory()->create(['user_id' => $user->id, 'action' => 'LOGIN']);
     ActivityLog::factory()->create(['user_id' => $this->seller->id, 'action' => 'LOGOUT']);
 
-    $request = new \Illuminate\Http\Request(['search' => 'Fulano']);
+    $request = new Request(['search' => 'Fulano']);
     $result = $this->dashboardService->getPaginatedActivity($request);
 
     expect($result->total())->toBe(1);

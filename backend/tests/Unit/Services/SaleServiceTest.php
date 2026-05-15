@@ -21,7 +21,6 @@ use App\Models\Customer;
 use App\Models\FinancialEntry;
 use App\Models\Product;
 use App\Models\Sale;
-use App\Models\StockMovement;
 use App\Models\User;
 use App\Services\SaleService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -80,7 +79,7 @@ test('executeSale lanca excecao para estoque insuficiente e reverte tudo', funct
     ];
 
     expect(fn () => $this->saleService->executeSale($saleData, $this->seller))
-        ->toThrow(\InvalidArgumentException::class, 'Estoque insuficiente');
+        ->toThrow(InvalidArgumentException::class, 'Estoque insuficiente');
 
     expect(Product::find($this->product1->id)->stock_quantity)->toBe(20);
     expect(Sale::count())->toBe(0);
@@ -98,7 +97,7 @@ test('executeSale lanca excecao para produto inativo', function () {
     ];
 
     expect(fn () => $this->saleService->executeSale($saleData, $this->seller))
-        ->toThrow(\InvalidArgumentException::class, 'inativo');
+        ->toThrow(InvalidArgumentException::class, 'inativo');
 
     expect(Sale::count())->toBe(0);
 });
