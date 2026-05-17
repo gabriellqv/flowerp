@@ -2,6 +2,7 @@ FROM php:8.3-fpm-alpine AS base
 
 RUN apk add --no-cache \
     linux-headers \
+    ca-certificates \
     $PHPIZE_DEPS \
     && docker-php-ext-install pdo pdo_mysql opcache
 
