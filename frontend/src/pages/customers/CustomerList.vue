@@ -10,7 +10,7 @@
   import { ref, onMounted, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import api from '@/services/api';
-  import type { Customer, PaginatedResponse } from '@/types';
+  import type { ICustomer, IPaginatedResponse } from '@/types';
   import { useToast } from '@/composables/useToast';
   import DataTable from '@/components/ui/DataTable.vue';
   import PageContainer from '@/components/ui/PageContainer.vue';
@@ -22,7 +22,7 @@
   const router = useRouter();
   const { showToast } = useToast();
 
-  const customers = ref<Customer[]>([]);
+  const customers = ref<ICustomer[]>([]);
   const total = ref(0);
   const page = ref(1);
   const perPage = ref(15);
@@ -76,7 +76,7 @@
     }
 
     try {
-      const { data } = await api.get<PaginatedResponse<Customer>>('/customers', {
+      const { data } = await api.get<IPaginatedResponse<ICustomer>>('/customers', {
         params: { page: page.value, search: search.value || undefined },
         signal: controller.signal,
       });
@@ -110,11 +110,11 @@
     router.push('/customers/new');
   }
 
-  function editCustomer(customer: Customer) {
+  function editCustomer(customer: ICustomer) {
     router.push(`/customers/${customer.id}/edit`);
   }
 
-  async function deleteCustomer(customer: Customer) {
+  async function deleteCustomer(customer: ICustomer) {
     openConfirm(`Deseja excluir o cliente "${customer.name}"?`, async () => {
       await api.patch(`/customers/${customer.id}/toggle-active`);
       showToast('Cliente desativado com sucesso.');
@@ -149,7 +149,7 @@
     }
   }
 
-  async function toggleActive(customer: Customer) {
+  async function toggleActive(customer: ICustomer) {
     await api.patch(`/customers/${customer.id}/toggle-active`);
     customer.is_active = !customer.is_active;
     showToast(customer.is_active ? 'Cliente ativado.' : 'Cliente desativado.', 'info');

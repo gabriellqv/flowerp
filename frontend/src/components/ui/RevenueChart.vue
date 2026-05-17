@@ -15,6 +15,7 @@
   import { Bar } from 'vue-chartjs';
   import type { ChartComponentRef } from 'vue-chartjs';
   import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
+  import type { ScriptableContext } from 'chart.js';
   import api from '@/services/api';
   import { formatCurrency } from '@/utils/format';
   import type { IChartDataPoint } from '@/types';
@@ -36,6 +37,17 @@
   const chartMounted = ref(false);
   const refreshing = ref(false);
   const barRef = ref<ChartComponentRef<'bar'> | null>(null);
+
+  /** Cria gradiente vertical para as barras do gráfico de receita. */
+  function createVerticalGradient(context: ScriptableContext<'bar'>) {
+    const chart = context.chart;
+    const { ctx, chartArea } = chart;
+    if (!chartArea) return 'rgba(5, 150, 105, 0.6)';
+    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+    gradient.addColorStop(0, 'rgba(5, 150, 105, 0.1)');
+    gradient.addColorStop(1, 'rgba(5, 150, 105, 0.8)');
+    return gradient;
+  }
 
   async function fetchChart() {
     if (barRef.value?.chart) {
@@ -129,15 +141,7 @@
           datasets: [
             {
               data: chartValues,
-              backgroundColor: (context: any) => {
-                const chart = context.chart;
-                const { ctx, chartArea } = chart;
-                if (!chartArea) return 'rgba(5, 150, 105, 0.6)';
-                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                gradient.addColorStop(0, 'rgba(5, 150, 105, 0.1)');
-                gradient.addColorStop(1, 'rgba(5, 150, 105, 0.8)');
-                return gradient;
-              },
+              backgroundColor: createVerticalGradient,
               borderColor: '#059669',
               borderWidth: 1,
               borderRadius: 6,

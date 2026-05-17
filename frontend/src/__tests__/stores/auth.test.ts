@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useAuthStore } from '@/stores/auth';
-import type { User } from '@/types';
+import type { IUser } from '@/types';
 
 // Mock do modulo api para evitar chamadas HTTP reais
 vi.mock('@/services/api', () => ({
@@ -20,7 +20,7 @@ vi.mock('@/services/api', () => ({
 }));
 
 /** Cria um usuario fake para testes de permissao. */
-function createFakeUser(role: User['role']): User {
+function createFakeUser(role: IUser['role']): IUser {
   return {
     id: 'uuid-test-001',
     name: 'Teste',

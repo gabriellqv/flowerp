@@ -9,7 +9,7 @@
   import api from '@/services/api';
   import { formatCurrency } from '@/utils/format';
   import { useAuthStore } from '@/stores/auth';
-  import type { DashboardSummary } from '@/types';
+  import type { IDashboardSummary } from '@/types';
   import {
     Package,
     DollarSign,
@@ -30,7 +30,7 @@
   import DashboardSkeleton from '@/components/ui/DashboardSkeleton.vue';
 
   const authStore = useAuthStore();
-  const summary = ref<DashboardSummary | null>(null);
+  const summary = ref<IDashboardSummary | null>(null);
   const loading = ref(true);
 
   const greeting = computed(() => {
@@ -42,7 +42,7 @@
 
   onMounted(async () => {
     try {
-      const { data } = await api.get<DashboardSummary>('/dashboard/summary');
+      const { data } = await api.get<IDashboardSummary>('/dashboard/summary');
       summary.value = data;
     } catch (e) {
       console.error('Erro ao carregar summary:', e);

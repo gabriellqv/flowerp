@@ -10,7 +10,7 @@
   import { ref, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import api from '@/services/api';
-  import type { Sale } from '@/types';
+  import type { ISale } from '@/types';
   import { formatCurrency } from '@/utils/format';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -20,12 +20,12 @@
   const route = useRoute();
   const router = useRouter();
 
-  const sale = ref<Sale | null>(null);
+  const sale = ref<ISale | null>(null);
   const loading = ref(true);
 
   onMounted(async () => {
     try {
-      const { data } = await api.get<Sale>(`/sales/${route.params.id}`);
+      const { data } = await api.get<ISale>(`/sales/${route.params.id}`);
       sale.value = data;
     } finally {
       loading.value = false;
