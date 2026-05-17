@@ -54,22 +54,28 @@
       refreshing.value = true;
     }
 
-    const { data } = await api.get<IChartDataPoint[]>(
-      `/dashboard/revenue-chart?period=${activePeriod.value}`,
-    );
-    const values = data.map((d) => d.value);
+    try {
+      const { data } = await api.get<IChartDataPoint[]>(
+        `/dashboard/revenue-chart?period=${activePeriod.value}`,
+      );
+      const values = data.map((d) => d.value);
 
-    chartData.value = data;
-    initialLoading.value = false;
-    refreshing.value = false;
+      chartData.value = data;
+      initialLoading.value = false;
+      refreshing.value = false;
 
-    if (!chartMounted.value) {
-      chartMounted.value = true;
-      chartValues.value = new Array(values.length).fill(0);
-      await nextTick();
+      if (!chartMounted.value) {
+        chartMounted.value = true;
+        chartValues.value = new Array(values.length).fill(0);
+        await nextTick();
+      }
+
+      chartValues.value = values;
+    } catch (e) {
+      console.error('Erro ao carregar grafico de receita:', e);
+      initialLoading.value = false;
+      refreshing.value = false;
     }
-
-    chartValues.value = values;
   }
 
   onMounted(fetchChart);

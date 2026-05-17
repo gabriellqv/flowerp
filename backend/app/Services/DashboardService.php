@@ -209,9 +209,12 @@ class DashboardService
     {
         $results = [];
 
+        $driver = DB::connection()->getDriverName();
+        $monthExpr = $driver === 'sqlite' ? "strftime('%Y-%m', created_at)" : "DATE_FORMAT(created_at, '%Y-%m')";
+
         $salesByMonth = Sale::where('created_at', '>=', Carbon::now()->subMonths($months)->startOfMonth())
             ->completed()
-            ->selectRaw("strftime('%Y-%m', created_at) as month, SUM(total_amount) as total")
+            ->selectRaw("{$monthExpr} as month, SUM(total_amount) as total")
             ->groupBy('month')
             ->pluck('total', 'month');
 
