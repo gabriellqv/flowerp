@@ -9,11 +9,11 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import api from '@/services/api';
-import type { User, LoginResponse } from '@/types';
+import type { IUser, ILoginResponse } from '@/types';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'));
-  const user = ref<User | null>(null);
+  const user = ref<IUser | null>(null);
 
   const isAuthenticated = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.role === 'admin');
@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
   const canSell = computed(() => ['admin', 'manager', 'seller'].includes(user.value?.role ?? ''));
 
   async function login(email: string, password: string) {
-    const { data } = await api.post<LoginResponse>('/auth/login', { email, password });
+    const { data } = await api.post<ILoginResponse>('/auth/login', { email, password });
     token.value = data.access_token;
     user.value = data.user;
     localStorage.setItem('token', data.access_token);
@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function fetchMe() {
     try {
-      const { data } = await api.get<User>('/auth/me');
+      const { data } = await api.get<IUser>('/auth/me');
       user.value = data;
     } catch {
       logout();

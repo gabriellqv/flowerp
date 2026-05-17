@@ -10,7 +10,7 @@
   import api from '@/services/api';
   import { useAuthStore } from '@/stores/auth';
   import { useToast } from '@/composables/useToast';
-  import type { User } from '@/types';
+  import type { IUser } from '@/types';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
   import AppInput from '@/components/ui/AppInput.vue';
@@ -69,7 +69,7 @@
     profileError.value = '';
 
     try {
-      const { data } = await api.put<User>('/auth/profile', profile.value);
+      const { data } = await api.put<IUser>('/auth/profile', profile.value);
       auth.user = data;
       showToast('Perfil atualizado com sucesso.');
     } catch (e: unknown) {

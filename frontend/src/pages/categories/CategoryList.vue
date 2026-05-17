@@ -10,7 +10,7 @@
   import { ref, onMounted, computed } from 'vue';
   import { useRouter } from 'vue-router';
   import api from '@/services/api';
-  import type { Category } from '@/types';
+  import type { ICategory } from '@/types';
   import { useAuthStore } from '@/stores/auth';
   import { useToast } from '@/composables/useToast';
   import DataTable from '@/components/ui/DataTable.vue';
@@ -24,8 +24,8 @@
   const auth = useAuthStore();
   const { showToast } = useToast();
 
-  const allCategories = ref<Category[]>([]);
-  const categories = ref<Category[]>([]);
+  const allCategories = ref<ICategory[]>([]);
+  const categories = ref<ICategory[]>([]);
   const loading = ref(true);
   const search = ref('');
   const confirmVisible = ref(false);
@@ -57,7 +57,7 @@
   ];
 
   onMounted(async () => {
-    const { data } = await api.get<Category[]>('/categories');
+    const { data } = await api.get<ICategory[]>('/categories');
     allCategories.value = data;
     categories.value = data;
     loading.value = false;
@@ -80,11 +80,11 @@
     router.push('/categories/new');
   }
 
-  function editCategory(category: Category) {
+  function editCategory(category: ICategory) {
     router.push(`/categories/${category.id}/edit`);
   }
 
-  async function deleteCategory(category: Category) {
+  async function deleteCategory(category: ICategory) {
     openConfirm(`Deseja excluir a categoria "${category.name}"?`, async () => {
       try {
         await api.delete(`/categories/${category.id}`);

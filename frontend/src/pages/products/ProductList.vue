@@ -13,7 +13,7 @@
   import { ref, onMounted, watch, computed } from 'vue';
   import { useRouter } from 'vue-router';
   import api from '@/services/api';
-  import type { Product, PaginatedResponse, Category } from '@/types';
+  import type { IProduct, IPaginatedResponse, ICategory } from '@/types';
   import { formatCurrency } from '@/utils/format';
   import { useToast } from '@/composables/useToast';
   import DataTable from '@/components/ui/DataTable.vue';
@@ -27,14 +27,14 @@
   const router = useRouter();
   const { showToast } = useToast();
 
-  const products = ref<Product[]>([]);
+  const products = ref<IProduct[]>([]);
   const total = ref(0);
   const page = ref(1);
   const perPage = ref(15);
   const loading = ref(true);
   const refreshing = ref(false);
   const search = ref('');
-  const categories = ref<Category[]>([]);
+  const categories = ref<ICategory[]>([]);
   const selectedCategory = ref('');
   const sortBy = ref('name');
   const sortDir = ref<'asc' | 'desc'>('asc');
@@ -105,7 +105,7 @@
         order: sortDir.value,
         category_id: selectedCategory.value || undefined,
       };
-      const { data } = await api.get<PaginatedResponse<Product>>('/products', {
+      const { data } = await api.get<IPaginatedResponse<IProduct>>('/products', {
         params,
         signal: controller.signal,
       });
@@ -125,7 +125,7 @@
   }
 
   onMounted(async () => {
-    const catRes = await api.get<Category[]>('/categories');
+    const catRes = await api.get<ICategory[]>('/categories');
     categories.value = catRes.data;
     fetchProducts();
   });
@@ -159,11 +159,11 @@
     router.push('/products/new');
   }
 
-  function editProduct(product: Product) {
+  function editProduct(product: IProduct) {
     router.push(`/products/${product.id}/edit`);
   }
 
-  async function deleteProduct(product: Product) {
+  async function deleteProduct(product: IProduct) {
     openConfirm(`Deseja excluir o produto "${product.name}"?`, async () => {
       await api.delete(`/products/${product.id}`);
       showToast('Produto excluído com sucesso.');
@@ -198,7 +198,7 @@
     }
   }
 
-  async function toggleActive(product: Product) {
+  async function toggleActive(product: IProduct) {
     await api.patch(`/products/${product.id}/toggle-active`);
     product.is_active = !product.is_active;
     showToast(product.is_active ? 'Produto ativado.' : 'Produto desativado.', 'info');
@@ -207,7 +207,7 @@
   /**
    * Retorna as classes CSS da badge de status de estoque.
    */
-  function badgeClass(product: Product): string {
+  function badgeClass(product: IProduct): string {
     if (product.stock_quantity === 0) {
       return 'bg-error/10 text-error border-error/20';
     }
@@ -217,7 +217,7 @@
     return 'bg-primary/10 text-primary-text border-primary/20';
   }
 
-  function stockStatusLabel(product: Product): string {
+  function stockStatusLabel(product: IProduct): string {
     if (product.stock_quantity === 0) return 'Zerado';
     if (product.stock_quantity <= product.min_stock) return 'Baixo';
     return 'OK';

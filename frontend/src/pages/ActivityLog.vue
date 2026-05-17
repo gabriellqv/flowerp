@@ -9,7 +9,7 @@
    */
   import { ref, onMounted, watch, computed } from 'vue';
   import api from '@/services/api';
-  import type { IActivityLogEntry, PaginatedResponse } from '@/types';
+  import type { IActivityLogEntry, IPaginatedResponse } from '@/types';
   import DataTable from '@/components/ui/DataTable.vue';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -132,7 +132,7 @@
         search: search.value || undefined,
         action: selectedAction.value || undefined,
       };
-      const { data } = await api.get<PaginatedResponse<IActivityLogEntry>>(
+      const { data } = await api.get<IPaginatedResponse<IActivityLogEntry>>(
         '/dashboard/activity-log',
         { params, signal: controller.signal },
       );

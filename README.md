@@ -5,7 +5,8 @@ Projeto desenvolvido como monorepo contendo um backend em Laravel (API REST) e u
 
 ## Tecnologias
 
-- **Backend:** Laravel 13, PHP 8.3, SQLite, Sanctum (Autenticacao)
+- **Backend:** Laravel 13, PHP 8.3, Sanctum (Autenticacao)
+- **Banco de dados:** SQLite (desenvolvimento local e testes) / MySQL 8 (Docker)
 - **Frontend:** Vue 3, TypeScript, Vite, Tailwind CSS 4, Pinia, Vue Router
 - **Qualidade:** ESLint, Prettier, Laravel Pint, Pest PHP, Vitest
 - **DevOps:** Docker, Docker Compose, GitHub Actions (CI)

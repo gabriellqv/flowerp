@@ -10,7 +10,7 @@
   import { ref, onMounted, computed } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import api from '@/services/api';
-  import type { Product, Category } from '@/types';
+  import type { IProduct, ICategory } from '@/types';
   import { useToast } from '@/composables/useToast';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -27,7 +27,7 @@
   const isEdit = computed(() => !!route.params.id);
   const title = computed(() => (isEdit.value ? 'Editar Produto' : 'Novo Produto'));
 
-  const categories = ref<Category[]>([]);
+  const categories = ref<ICategory[]>([]);
 
   interface SelectOption {
     label: string;
@@ -53,7 +53,7 @@
   const errorsList = ref<string[]>([]);
 
   async function loadProduct() {
-    const { data } = await api.get<Product>(`/products/${route.params.id}`);
+    const { data } = await api.get<IProduct>(`/products/${route.params.id}`);
     form.value = {
       name: data.name,
       sku: data.sku,
@@ -67,7 +67,7 @@
   }
 
   onMounted(async () => {
-    const catRes = await api.get<Category[]>('/categories');
+    const catRes = await api.get<ICategory[]>('/categories');
     categories.value = catRes.data;
 
     if (isEdit.value) {

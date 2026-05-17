@@ -11,7 +11,7 @@
   import { ref, onMounted, watch } from 'vue';
   import { useRouter } from 'vue-router';
   import api from '@/services/api';
-  import type { Sale, PaginatedResponse } from '@/types';
+  import type { ISale, IPaginatedResponse } from '@/types';
   import { formatCurrency } from '@/utils/format';
   import { useAuthStore } from '@/stores/auth';
   import DataTable from '@/components/ui/DataTable.vue';
@@ -23,7 +23,7 @@
   const router = useRouter();
   const auth = useAuthStore();
 
-  const sales = ref<Sale[]>([]);
+  const sales = ref<ISale[]>([]);
   const total = ref(0);
   const page = ref(1);
   const perPage = ref(20);
@@ -56,7 +56,7 @@
     }
 
     try {
-      const { data } = await api.get<PaginatedResponse<Sale>>('/sales', {
+      const { data } = await api.get<IPaginatedResponse<ISale>>('/sales', {
         params: { page: page.value, search: search.value || undefined },
         signal: controller.signal,
       });
@@ -98,7 +98,7 @@
     return 'Concluída';
   }
 
-  function viewSale(sale: Sale) {
+  function viewSale(sale: ISale) {
     router.push(`/sales/${sale.id}`);
   }
 </script>

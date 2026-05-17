@@ -10,7 +10,7 @@
   import { ref, computed, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
   import api from '@/services/api';
-  import type { Product, Category, Customer, CartItem } from '@/types';
+  import type { IProduct, ICategory, ICustomer, ICartItem } from '@/types';
   import { formatCurrency } from '@/utils/format';
   import { useToast } from '@/composables/useToast';
   import { Plus, Minus, Trash2 } from 'lucide-vue-next';
@@ -24,13 +24,13 @@
   const router = useRouter();
   const { showToast } = useToast();
 
-  const products = ref<Product[]>([]);
-  const categories = ref<Category[]>([]);
-  const customers = ref<Customer[]>([]);
+  const products = ref<IProduct[]>([]);
+  const categories = ref<ICategory[]>([]);
+  const customers = ref<ICustomer[]>([]);
   const customerSearch = ref('');
-  const selectedCustomer = ref<Customer | null>(null);
+  const selectedCustomer = ref<ICustomer | null>(null);
   const selectedCategory = ref('');
-  const cart = ref<CartItem[]>([]);
+  const cart = ref<ICartItem[]>([]);
   const discountValue = ref('0');
   const paymentMethod = ref('');
   const submitting = ref(false);
@@ -77,7 +77,7 @@
 
   const cartTotal = computed(() => Math.max(0, cartSubtotal.value - discount.value));
 
-  function addToCart(product: Product) {
+  function addToCart(product: IProduct) {
     const existing = cart.value.find((i) => i.product.id === product.id);
     if (existing) {
       if (existing.quantity < product.stock_quantity) {
@@ -100,7 +100,7 @@
     }
   }
 
-  function selectCustomer(customer: Customer) {
+  function selectCustomer(customer: ICustomer) {
     selectedCustomer.value = customer;
     customerSearch.value = '';
   }
@@ -114,7 +114,7 @@
     const controller = new AbortController();
     abortController = controller;
     try {
-      const { data } = await api.get<{ data: Customer[] }>('/customers', {
+      const { data } = await api.get<{ data: ICustomer[] }>('/customers', {
         params: { per_page: 200 },
         signal: controller.signal,
       });
@@ -163,7 +163,7 @@
   onMounted(async () => {
     const [prodRes, catRes] = await Promise.all([
       api.get('/products', { params: { per_page: 200 } }),
-      api.get<Category[]>('/categories'),
+      api.get<ICategory[]>('/categories'),
     ]);
     products.value = prodRes.data.data || prodRes.data;
     categories.value = catRes.data;

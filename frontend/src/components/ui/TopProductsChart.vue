@@ -10,6 +10,7 @@
   import { Bar } from 'vue-chartjs';
   import type { ChartComponentRef } from 'vue-chartjs';
   import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Tooltip } from 'chart.js';
+  import type { ScriptableContext } from 'chart.js';
   import api from '@/services/api';
   import type { IChartDataPoint } from '@/types';
   import { glassTooltipConfig } from '@/utils/chartConfig';
@@ -21,6 +22,31 @@
   const loading = ref(true);
   const chartReady = ref(false);
   const barRef = ref<ChartComponentRef<'bar'> | null>(null);
+
+  /** Cria gradiente horizontal para as barras de top produtos. */
+  function createHorizontalGradient(context: ScriptableContext<'bar'>) {
+    const chart = context.chart;
+    const { ctx, chartArea } = chart;
+    if (!chartArea) return 'rgba(5, 150, 105, 0.6)';
+    const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+    gradient.addColorStop(0, 'rgba(5, 150, 105, 0.2)');
+    gradient.addColorStop(1, 'rgba(5, 150, 105, 0.8)');
+    return gradient;
+  }
+
+  /**
+   * Trunca labels do eixo Y para no máximo 16 caracteres.
+   *
+   * Usa o índice numérico recebido pelo Chart.js para buscar
+   * o label correspondente no array de dados carregados.
+   */
+  function truncateTickLabel(value: string | number): string {
+    const label = chartData.value[value as number]?.label ?? String(value);
+    if (label.length > 16) {
+      return label.substring(0, 16) + '...';
+    }
+    return label;
+  }
 
   onMounted(async () => {
     try {
@@ -87,15 +113,7 @@
           datasets: [
             {
               data: new Array(chartData.length).fill(0),
-              backgroundColor: (context: any) => {
-                const chart = context.chart;
-                const { ctx, chartArea } = chart;
-                if (!chartArea) return 'rgba(5, 150, 105, 0.6)';
-                const gradient = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                gradient.addColorStop(0, 'rgba(5, 150, 105, 0.2)');
-                gradient.addColorStop(1, 'rgba(5, 150, 105, 0.8)');
-                return gradient;
-              },
+              backgroundColor: createHorizontalGradient,
               borderColor: '#059669',
               borderWidth: 1,
               borderRadius: 6,
@@ -128,13 +146,7 @@
             y: {
               grid: { display: false },
               ticks: {
-                callback: function (value) {
-                  const label = this.getLabelForValue(value as number);
-                  if (typeof label === 'string' && label.length > 16) {
-                    return label.substring(0, 16) + '...';
-                  }
-                  return label;
-                },
+                callback: truncateTickLabel,
               },
             },
           },

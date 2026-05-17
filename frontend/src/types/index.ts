@@ -3,26 +3,29 @@
  *
  * Define os contratos de dados entre a API (Laravel) e os componentes Vue,
  * garantindo type safety em toda a camada de apresentacao.
+ *
+ * Todas as interfaces seguem o padrao PascalCase com prefixo `I`
+ * conforme definido nas convencoes do projeto (AGENTS.md).
  */
 
-export interface User {
+export interface IUser {
   id: string;
   name: string;
   email: string;
   role: 'admin' | 'manager' | 'seller' | 'viewer';
 }
 
-export interface LoginResponse {
+export interface ILoginResponse {
   access_token: string;
-  user: User;
+  user: IUser;
 }
 
-export interface Category {
+export interface ICategory {
   id: string;
   name: string;
 }
 
-export interface Customer {
+export interface ICustomer {
   id: string;
   name: string;
   email: string;
@@ -31,12 +34,12 @@ export interface Customer {
   is_active: boolean;
 }
 
-export interface Product {
+export interface IProduct {
   id: string;
   name: string;
   sku: string;
   category_id: string;
-  category?: Category;
+  category?: ICategory;
   cost_price: number;
   sale_price: number;
   stock_quantity: number;
@@ -44,7 +47,7 @@ export interface Product {
   is_active: boolean;
 }
 
-export interface PaginatedResponse<T> {
+export interface IPaginatedResponse<T> {
   data: T[];
   total: number;
   page?: number;
@@ -58,18 +61,18 @@ export interface PaginatedResponse<T> {
   };
 }
 
-export interface SaleItem {
+export interface ISaleItem {
   product_id: string;
-  product?: Product;
+  product?: IProduct;
   quantity: number;
   unit_price: number;
 }
 
-export interface Sale {
+export interface ISale {
   id: string;
-  seller: User;
+  seller: IUser;
   customer?: { id: string; name: string };
-  items: SaleItem[];
+  items: ISaleItem[];
   total_amount: number;
   discount: number;
   payment_method: string | null;
@@ -77,7 +80,7 @@ export interface Sale {
   created_at: string;
 }
 
-export interface DashboardSummary {
+export interface IDashboardSummary {
   active_products: number;
   monthly_revenue: number;
   previous_revenue: number;
@@ -112,7 +115,7 @@ export interface IActivityLogEntry {
   created_at: string;
 }
 
-export interface CartItem {
-  product: Product;
+export interface ICartItem {
+  product: IProduct;
   quantity: number;
 }

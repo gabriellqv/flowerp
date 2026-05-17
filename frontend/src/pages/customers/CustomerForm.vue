@@ -10,7 +10,7 @@
   import { ref, computed, onMounted } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import api from '@/services/api';
-  import type { Customer } from '@/types';
+  import type { ICustomer } from '@/types';
   import { useToast } from '@/composables/useToast';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -37,7 +37,7 @@
   const error = ref('');
 
   async function loadCustomer() {
-    const { data } = await api.get<Customer>(`/customers/${route.params.id}`);
+    const { data } = await api.get<ICustomer>(`/customers/${route.params.id}`);
     form.value = {
       name: data.name,
       email: data.email ?? '',

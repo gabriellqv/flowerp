@@ -10,7 +10,7 @@
   import { ref, computed, onMounted } from 'vue';
   import { useRouter, useRoute } from 'vue-router';
   import api from '@/services/api';
-  import type { Category } from '@/types';
+  import type { ICategory } from '@/types';
   import { useToast } from '@/composables/useToast';
   import PageContainer from '@/components/ui/PageContainer.vue';
   import PageHeader from '@/components/ui/PageHeader.vue';
@@ -34,7 +34,7 @@
   const error = ref('');
 
   async function loadCategory() {
-    const { data } = await api.get<Category>(`/categories/${route.params.id}`);
+    const { data } = await api.get<ICategory>(`/categories/${route.params.id}`);
     form.value = { name: data.name };
   }
 
