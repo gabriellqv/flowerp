@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de produto do catálogo.
@@ -28,13 +29,7 @@ use Illuminate\Support\Str;
  */
 class Product extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = [
@@ -51,15 +46,38 @@ class Product extends Model
     ];
 
     /**
-     * Gera UUID automaticamente ao criar um novo registro.
+     * Filtra apenas produtos ativos.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
      */
-    protected static function booted(): void
+    public function scopeActive(Builder $query): Builder
     {
-        static::creating(function (Product $product) {
-            if (empty($product->id)) {
-                $product->id = (string) Str::uuid();
-            }
-        });
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Filtra produtos ativos com estoque abaixo do mínimo.
+     *
+     * @param  Builder<Product>  $query
+     * @return Builder<Product>
+     */
+    public function scopeLowStock(Builder $query): Builder
+    {
+        return $query->where('is_active', true)
+            ->whereColumn('stock_quantity', '<=', 'min_stock');
+    }
+
+    /**
+     * Filtra produtos por categoria.
+     *
+     * @param  Builder<Product>  $query
+     * @param  string  $categoryId  UUID da categoria
+     * @return Builder<Product>
+     */
+    public function scopeByCategory(Builder $query, string $categoryId): Builder
+    {
+        return $query->where('category_id', $categoryId);
     }
 
     /**

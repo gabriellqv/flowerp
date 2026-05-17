@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Factory para geração de usuários de teste.
@@ -26,7 +25,7 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => Hash::make('senha123'),
+            'password' => 'senha123',
             'role' => fake()->randomElement(['admin', 'manager', 'seller', 'viewer']),
             'is_active' => true,
         ];

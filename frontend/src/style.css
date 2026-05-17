@@ -1,1 +1,305 @@
+/**
+ * FlowERP -- Estilos globais, tema e tipografia.
+ *
+ * @description
+ * - Define design tokens via @theme (Tailwind v4) para utilitarios build-time.
+ * - Tokens semanticos referenciam CSS custom properties para troca de tema runtime.
+ * - Tema claro como padrao. Tema escuro via atributo [data-theme="dark"] no <html>.
+ *
+ * @see styles/tokens.css
+ */
+
+@import './styles/tokens.css';
 @import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+
+@theme {
+  /*
+   * Cores de superficie (backgrounds) -- tema claro
+   */
+  --color-surface: #fefefe;
+  --color-surface-secondary: #f9fafb;
+  --color-surface-elevated: #f3f4f6;
+
+  /*
+   * Cores de borda
+   */
+  --color-border: #e5e7eb;
+  --color-border-input: #d1d5db;
+
+  /*
+   * Cores de texto
+   */
+  --color-text-primary: #111827;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+  --color-text-disabled: #d1d5db;
+
+  --color-secondary: var(--color-text-secondary);
+  --color-tertiary: var(--color-text-tertiary);
+
+  /*
+   * Cor primaria / acao (marca)
+   */
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-text: #059669;
+
+  /*
+   * Estados de feedback
+   */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-text: #dc2626;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-hover: #b91c1c;
+
+  --color-warning: #d97706;
+  --color-warning-bg: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  --color-info: #0284c7;
+  --color-info-bg: rgba(56, 189, 248, 0.1);
+  --color-info-border: rgba(56, 189, 248, 0.3);
+
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-border: rgba(5, 150, 105, 0.3);
+
+  /*
+   * Espacamento
+   */
+  --spacing-page: 2rem;
+  --spacing-section: 1.5rem;
+  --spacing-card: 1.25rem;
+
+  /*
+   * Border radius
+   */
+  --radius-card: 0.75rem;
+  --radius-input: 0.5rem;
+  --radius-button: 0.5rem;
+  --radius-button-sm: 0.25rem;
+
+  /*
+   * Tamanhos de fonte
+   */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.8125rem;
+  --font-size-body: 0.875rem;
+  --font-size-lg: 1rem;
+  --font-size-xl: 1.25rem;
+  --font-size-heading: 1.25rem;
+
+  /*
+   * Pesos de fonte
+   */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /*
+   * Altura de linha
+   */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+
+  /*
+   * Letter spacing
+   */
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+
+  /*
+   * Familias tipograficas
+   */
+  --font-family-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /*
+   * Opacidade de estados desabilitados
+   */
+  --opacity-disabled-button: 0.5;
+  --opacity-disabled-pagination: 0.3;
+  /*
+   * Glassmorphism Colors
+   */
+  --color-glass-bg: rgba(255, 255, 255, 0.6);
+  --color-glass-border: rgba(255, 255, 255, 0.5);
+  --color-glass-shine: rgba(255, 255, 255, 0.7);
+}
+
+/*
+ * Configuracao global de tipografia.
+ *
+ * Define a base tipografica do sistema: Inter como fonte padrao,
+ * tamanho base 14px, peso medio (400), line-height confortavel
+ * para leitura prolongada em dashboards ERP.
+ */
+@layer base {
+  body {
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-body);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-normal);
+    letter-spacing: var(--letter-spacing-normal);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    letter-spacing: var(--letter-spacing-tight);
+  }
+}
+
+/*
+ * Sobrescreve o focus ring azul padrao do @tailwindcss/forms.
+ *
+ * Colocado fora de qualquer @layer para ter prioridade maxima.
+ * Todos os campos de formulario usam a cor primaria (emerald)
+ * no focus, mantendo consistencia visual com o design system.
+ */
+input:focus,
+textarea:focus,
+select:focus,
+[type='text']:focus,
+[type='email']:focus,
+[type='password']:focus,
+[type='number']:focus,
+[type='search']:focus,
+[type='tel']:focus,
+[type='url']:focus {
+  --tw-ring-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--color-primary) !important;
+}
+
+/*
+ * Classe utilitaria para fonte monoespaçada.
+ *
+ * Uso seletivo em elementos tecnicos: IDs, valores monetarios,
+ * logs, dados tecnicos, numeros, codigos de status e metricas.
+ */
+.font-mono {
+  font-family: var(--font-family-mono);
+  font-feature-settings: 'tnum', 'zero';
+}
+
+/*
+ * Barra de rolagem personalizada.
+ *
+ * Trilho transparente e sutil, thumb no verde da marca (emerald)
+ * com bordas arredondadas e transicao suave no hover.
+ * Compativel com Webkit (Chrome, Edge, Safari) e Firefox.
+ */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 9999px;
+    transition: background 0.2s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-hover);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
+
+/*
+ * Tema escuro.
+ *
+ * Sobrescreve as CSS custom properties geradas pelo @theme.
+ * Como este bloco esta em CSS sem camada (unlayered), ele
+ * vence o @theme que fica dentro da camada `theme` do Tailwind.
+ *
+ * Ativado via <html data-theme="dark">.
+ */
+[data-theme='dark'] {
+  /* Superficie */
+  --color-surface: #09090b;
+  --color-surface-secondary: #18181b;
+  --color-surface-elevated: #27272a;
+
+  /* Borda */
+  --color-border: #27272a;
+  --color-border-input: rgba(39, 39, 42, 0.5);
+
+  /* Texto */
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #a1a1aa;
+  --color-text-tertiary: #71717a;
+  --color-text-disabled: #52525b;
+
+  /* Primaria */
+  --color-primary: #059669;
+  --color-primary-hover: #10b981;
+  --color-primary-text: #34d399;
+
+  /* Erro */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-text: #f87171;
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  --color-error-hover: #fca5a5;
+
+  /* Alerta */
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+
+  /* Info */
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(56, 189, 248, 0.1);
+  --color-info-border: rgba(56, 189, 248, 0.3);
+
+  /* Success */
+  --color-success-bg: rgba(5, 150, 105, 0.1);
+  --color-success-border: rgba(5, 150, 105, 0.3);
+
+  /* Glassmorphism Dark */
+  --color-glass-bg: rgba(24, 24, 27, 0.6);
+  --color-glass-border: rgba(39, 39, 42, 0.5);
+  --color-glass-shine: rgba(82, 82, 91, 0.5);
+}
+
+/* 
+ * Oculta as setas nativas (spin-buttons) de inputs numéricos 
+ * para manter o design clean do glassmorphism. 
+ */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}

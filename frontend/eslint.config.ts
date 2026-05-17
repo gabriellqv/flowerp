@@ -29,6 +29,25 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.vue', '**/*.ts'],
+    languageOptions: {
+      globals: {
+        clearTimeout: 'readonly',
+        setTimeout: 'readonly',
+        requestAnimationFrame: 'readonly',
+        performance: 'readonly',
+        AbortController: 'readonly',
+        HTMLElement: 'readonly',
+        HTMLInputElement: 'readonly',
+        KeyboardEvent: 'readonly',
+        Event: 'readonly',
+        document: 'readonly',
+        window: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+  {
     rules: {
       'vue/multi-word-component-names': 'off',
       '@typescript-eslint/no-explicit-any': 'error',

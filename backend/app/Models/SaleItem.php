@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de item de venda.
@@ -22,28 +22,10 @@ use Illuminate\Support\Str;
  */
 class SaleItem extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = ['sale_id', 'product_id', 'quantity', 'unit_price'];
-
-    /**
-     * Gera UUID automaticamente ao criar um novo registro.
-     */
-    protected static function booted(): void
-    {
-        static::creating(function (SaleItem $item) {
-            if (empty($item->id)) {
-                $item->id = (string) Str::uuid();
-            }
-        });
-    }
 
     /**
      * Venda à qual este item pertence.

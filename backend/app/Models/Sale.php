@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\SaleStatus;
+use App\Models\Concerns\HasUuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Str;
 
 /**
  * Modelo de venda.
@@ -20,33 +22,46 @@ use Illuminate\Support\Str;
  * @property int $seller_id FK -> usuário vendedor
  * @property string|null $customer_id FK -> cliente (opcional)
  * @property string $total_amount Valor total da venda (decimal 12,2)
- * @property string $status Estado: COMPLETED ou CANCELLED
+ * @property string $discount Desconto aplicado (decimal 12,2)
+ * @property string|null $payment_method Forma de pagamento (pix, cash, card, etc.)
+ * @property SaleStatus $status Estado da venda
  */
 class Sale extends Model
 {
-    use HasFactory;
-
-    /** @var string Tipo da chave primária (UUID). */
-    protected $keyType = 'string';
-
-    /** @var bool Desabilita auto-incremento, utiliza UUID. */
-    public $incrementing = false;
+    use HasFactory, HasUuid;
 
     /** @var array<int, string> Campos permitidos para atribuição em massa. */
     protected $fillable = [
-        'seller_id', 'customer_id', 'total_amount', 'status',
+        'seller_id', 'customer_id', 'total_amount', 'discount', 'payment_method', 'status',
+    ];
+
+    /** @var array<string, string> Conversões automáticas de tipo. */
+    protected $casts = [
+        'total_amount' => 'decimal:2',
+        'discount' => 'decimal:2',
+        'status' => SaleStatus::class,
     ];
 
     /**
-     * Gera UUID automaticamente ao criar um novo registro.
+     * Filtra apenas vendas concluídas.
+     *
+     * @param  Builder<Sale>  $query
+     * @return Builder<Sale>
      */
-    protected static function booted(): void
+    public function scopeCompleted(Builder $query): Builder
     {
-        static::creating(function (Sale $sale) {
-            if (empty($sale->id)) {
-                $sale->id = (string) Str::uuid();
-            }
-        });
+        return $query->where('status', SaleStatus::COMPLETED);
+    }
+
+    /**
+     * Filtra vendas do mês atual.
+     *
+     * @param  Builder<Sale>  $query
+     * @return Builder<Sale>
+     */
+    public function scopeThisMonth(Builder $query): Builder
+    {
+        return $query->where('created_at', '>=', now()->startOfMonth());
     }
 
     /**
