@@ -21,15 +21,17 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 FROM base AS production
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-progress --no-scripts
 
 COPY . .
 
 RUN php artisan config:cache && \
-    php artisan route:cache
+    php artisan route:cache || true
 
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 USER www-data
 
-CMD ["sh", "-c", "php artisan migrate --force && php-fpm"]
+# O Render injeta a variável $PORT automaticamente. 
+# Usamos o artisan serve para responder conexões HTTP no Docker sem precisar do Nginx.
+CMD sh -c "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"
